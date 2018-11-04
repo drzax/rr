@@ -90,7 +90,7 @@ export default class Game extends React.Component {
 
     const handleGameData = doc => {
       // Save the first game data and come back if it doesn't exist.
-      if (!doc.exists) return doc.ref.set({ gameCount });
+      if (!doc.exists) return doc.ref.set({ gameCount: 0 });
 
       const gameCount = doc.data().gameCount;
       this.setState({
