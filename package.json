@@ -24,6 +24,7 @@
     "@material-ui/icons": "^3.0.1",
     "dexie": "^2.0.4",
     "firebase": "^5.5.7",
+    "loglevel": "^1.6.1",
     "react": "^16.6.0",
     "react-dom": "^16.6.0"
   }

@@ -12,6 +12,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { firestore } from "../../firebase";
+import * as log from "loglevel";
 
 export default class AddCard extends React.Component {
   state = {
@@ -33,18 +34,18 @@ export default class AddCard extends React.Component {
       level: 1,
       ...this.state.formData
     };
-    console.log("cardData", cardData);
+    log.debug("cardData", cardData);
     firestore
       .collection("cards")
       .doc()
       .set(cardData)
-      .then(console.log)
-      .catch(console.error);
+      .then(log.debug)
+      .catch(log.error);
     this.setState({ open: false });
   };
 
   handleInputChange = ({ target }) => {
-    console.log("target", target);
+    log.debug("target", target);
     const name = target.name;
     const value = target.type === "checkbox" ? target.checked : target.value;
 
@@ -58,7 +59,7 @@ export default class AddCard extends React.Component {
 
   render() {
     const { formData } = this.state;
-    console.log("formData", formData);
+    log.debug("formData", formData);
     return (
       <div className={styles.wrapper}>
         <Button

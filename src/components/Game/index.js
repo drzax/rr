@@ -5,6 +5,7 @@ import { firestore, auth } from "../../firebase";
 import Card from "../Card";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import * as log from "loglevel";
 
 const levelsFromGameCount = gameCount => {
   return calendar[gameCount % 64].slice();
@@ -27,15 +28,17 @@ export default class Game extends React.Component {
   };
 
   playNextLevel() {
-    const nextLevelIndex = this.state.nextLevelIndex + 1 || 0;
-    const nextLevel = this.state.nextLevels[nextLevelIndex];
-    console.log("nextLevelIndex, nextLevel", nextLevelIndex, nextLevel);
-    if (nextLevel === undefined) return this.endGame();
-
-    this.setState({ nextLevelIndex, nextLevel });
+    this.nextLevelIndex = this.nextLevelIndex + 1;
+    this.nextLevel = this.nextLevels[this.nextLevelIndex];
+    log.debug("this.nextLevelIndex", this.nextLevelIndex);
+    log.debug("this.nextLevel", this.nextLevel);
+    log.debug("this.nextLevels", this.nextLevels);
+    // If there is no next level, exit here, the game is over.
+    if (this.nextLevel === undefined) return this.endGame();
 
     const onCards = snapshot => {
       if (snapshot.size === 0) {
+        this.listeners.get("levelCards")();
         return this.playNextLevel();
       }
       const card = snapshot.docs[0];
@@ -49,13 +52,14 @@ export default class Game extends React.Component {
     this.listeners.set(
       "levelCards",
       this.cardsRef
-        .where("level", "==", nextLevel)
+        .where("level", "==", this.nextLevel)
         .limit(1)
         .onSnapshot(onCards)
     );
   }
 
   endGame = () => {
+    log.debug("endGame");
     this.gameRef.update({
       gameCount: this.state.gameCount + 1
     });
@@ -68,13 +72,13 @@ export default class Game extends React.Component {
   };
 
   startGame = () => {
+    log.debug("startGame");
     const cardsDue = this.state.cardsRemaining;
-
     this.setState({
       cardsDue: this.state.cardsRemaining,
       isGameEnd: false
     });
-
+    this.nextLevelIndex = -1;
     this.playNextLevel();
   };
 
@@ -90,16 +94,20 @@ export default class Game extends React.Component {
 
       const gameCount = doc.data().gameCount;
       this.setState({
-        gameCount,
-        nextLevels: levelsFromGameCount(gameCount)
+        gameCount
       });
 
-      // If there's no card listener, we've just mounted
-      if (!this.listeners.has("cardCount"))
-        this.listeners.set(
-          "cardCount",
-          this.cardsRef.where("level", "<=", 7).onSnapshot(this.countCards)
-        );
+      this.nextLevels = levelsFromGameCount(gameCount);
+      log.debug("this.nextLevels", this.nextLevels);
+
+      // The card count listener needs to be re-triggered here because the gameCount has changed.
+      // But there are no database changes to make it run. So instead, just re-initialise the listener.
+      const unsubscribe = this.listeners.get("cardCount");
+      unsubscribe && unsubscribe();
+      this.listeners.set(
+        "cardCount",
+        this.cardsRef.where("level", "<=", 7).onSnapshot(this.countCards)
+      );
     };
 
     this.listeners.set("gameData", this.gameRef.onSnapshot(handleGameData));
@@ -110,7 +118,7 @@ export default class Game extends React.Component {
 
     snapshot.forEach(card => {
       const data = card.data();
-      if (this.state.nextLevels.indexOf(data.level) > -1) cardsRemaining++;
+      if (this.nextLevels.indexOf(data.level) > -1) cardsRemaining++;
     });
     this.setState({ cardsRemaining });
 

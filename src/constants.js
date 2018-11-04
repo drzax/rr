@@ -2,8 +2,7 @@ export const GAME_STATES = {
   LOADING_GAME: 1,
   START_SCREEN: 2,
   LOADING_CARDS: 3,
-  PLAYING: 4,
-  GAME_END: 5
+  PLAYING: 4
 };
 
 export const calendar = [

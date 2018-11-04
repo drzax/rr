@@ -18,13 +18,17 @@ export default class Card extends React.Component {
 
   handleSuccess = () => {
     this.props.handleResult(true);
-    this.setState({ flipped: false });
   };
 
   handleFailure = () => {
     this.props.handleResult(false);
-    this.setState({ flipped: false });
   };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) {
+      this.setState({ flipped: false });
+    }
+  }
 
   componentDidMount() {
     window.addEventListener("keyup", this.flipKeyboard);
