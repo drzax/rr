@@ -1,0 +1,30 @@
+{
+  "name": "rr",
+  "version": "1.0.0-pre",
+  "description": "A project generated from aunty's react app template.",
+  "license": "MIT",
+  "private": true,
+  "contributors": [
+    "Simon Elvery <simon@elvery.net>"
+  ],
+  "aunty": {
+    "type": "react"
+  },
+  "scripts": {
+    "start": "aunty serve",
+    "test": "aunty test"
+  },
+  "devDependencies": {
+    "@abcnews/aunty": "^9.8.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "react-test-renderer": "^16.6.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.3.2",
+    "@material-ui/icons": "^3.0.1",
+    "dexie": "^2.0.4",
+    "firebase": "^5.5.7",
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0"
+  }
+}
