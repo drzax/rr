@@ -96,7 +96,10 @@ export default class Game extends React.Component {
       if (!doc.exists) return doc.ref.set({ gameCount: 0 });
 
       const { gameCount, lastPlayed } = doc.data();
-      const playedToday = isSameDay(lastPlayed.toDate(), new Date());
+      const playedToday = isSameDay(
+        lastPlayed ? lastPlayed.toDate() : new Date(2018, 11, 4),
+        new Date()
+      );
       log.debug("lastPlayed", lastPlayed);
       log.debug("playedToday", playedToday);
       this.setState({
