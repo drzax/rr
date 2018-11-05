@@ -1,0 +1,13 @@
+.wrapper {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.anon {
+  position: absolute;
+  top: 100%;
+  right: calc(100% + 20px);
+  width: 8em;
+  max-width: 80vw;
+}

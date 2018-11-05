@@ -23,6 +23,5 @@ const firestore = firebase.firestore();
 firestore.settings({ timestampsInSnapshots: true });
 
 const auth = firebase.auth();
-auth.signInAnonymously();
 
-export { firestore, auth };
+export { firebase, firestore, auth };

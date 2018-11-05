@@ -131,7 +131,7 @@ export default class Game extends React.Component {
   };
 
   componentWillUnmount() {
-    this.listeners.forEach((name, unsubscribe) => unsubscribe());
+    this.listeners.forEach(unsubscribe => unsubscribe());
   }
 
   render() {
