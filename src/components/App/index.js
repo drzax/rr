@@ -4,13 +4,14 @@ import worm from "./worm.svg";
 import Game from "../Game";
 import AddCard from "../AddCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Snackbar from "@material-ui/core/Snackbar";
 import { auth, firebase } from "../../firebase";
 import UserProfile from "../UserProfile";
 import LoginScreen from "../LoginScreen";
 import * as log from "loglevel";
 
 export default class App extends React.Component {
-  state = { awaitingLogin: true };
+  state = { awaitingLogin: true, superUser: false };
 
   signinLinkProcessed = false;
 
@@ -75,16 +76,31 @@ export default class App extends React.Component {
         this.setState({ user, awaitingLogin: false });
       }
     });
+
+    window.addEventListener("keyup", this.handleSuperUserToggle);
   }
 
   componentWillUnmount() {
     this.offAuthStateChanged();
+    window.removeEventListener("keyup", this.handleSuperUserToggle);
   }
 
-  login = () => {};
+  handleSuperUserToggle = ev => {
+    if (ev.key === "s") this.s = true;
+    setTimeout(() => (this.s = false), 500);
+    if (ev.key === "u" && this.s) {
+      const superUser = !this.state.superUser;
+      const message = superUser
+        ? "Super user mode enabled 💯"
+        : "Super user mode disabled";
+      this.setState({ superUser, message });
+      this.s = false;
+    }
+  };
 
   render() {
-    const { user, awaitingLogin } = this.state;
+    const { user, awaitingLogin, message, superUser } = this.state;
+
     if (awaitingLogin)
       return (
         <div className={styles.root}>
@@ -102,9 +118,17 @@ export default class App extends React.Component {
 
     return (
       <div className={styles.root}>
-        <Game user={user} />
+        <Game user={user} superUser={superUser} />
         <AddCard user={user} />
         <UserProfile user={user} />
+        <Snackbar
+          open={!!message}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">{message}</span>}
+        />
       </div>
     );
   }

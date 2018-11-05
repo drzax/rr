@@ -151,18 +151,16 @@ export default class Game extends React.Component {
       playedToday
     } = this.state;
 
-    // const startButton = cardsRemaining ? (
-    //
-    // ) : (
-    //   <p>There are no cards to reveiw. Add some?</p>
-    // );
+    const { superUser } = this.props;
+
+    log.debug("superUser", superUser);
 
     const getStartButton = () => {
-      return !playedToday && cardsRemaining ? (
+      return (!playedToday || superUser) && cardsRemaining ? (
         <Button
           size="large"
           variant="contained"
-          disabled={playedToday}
+          disabled={playedToday && !superUser}
           onClick={this.startGame}
         >
           Start reviewing {cardsRemaining} card
