@@ -98,6 +98,14 @@ export default class App extends React.Component {
     }
   };
 
+  handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    this.setState({ message: false });
+  };
+
   render() {
     const { user, awaitingLogin, message, superUser } = this.state;
 
@@ -123,6 +131,8 @@ export default class App extends React.Component {
         <UserProfile user={user} />
         <Snackbar
           open={!!message}
+          onClose={this.handleCloseSnackbar}
+          autoHideDuration={6000}
           anchorOrigin={{ vertical: "top", horizontal: "left" }}
           ContentProps={{
             "aria-describedby": "message-id"
