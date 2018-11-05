@@ -23,7 +23,8 @@ export default class Game extends React.Component {
   handleResult = result => {
     const { cardRef, cardData } = this.state;
     cardRef.update({
-      level: result ? cardData.level + 1 : 1
+      level: result ? cardData.level + 1 : 1,
+      lastAttempt: new Date()
     });
   };
 
