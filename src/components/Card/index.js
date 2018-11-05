@@ -45,15 +45,22 @@ export default class Card extends React.Component {
     const back = (
       <div>
         <div className={styles.answer}>{answer}</div>
-        <Button onClick={this.handleSuccess} color="primary">
+        <Button key="correct" onClick={this.handleSuccess} color="primary">
           Correct
         </Button>
-        <Button onClick={this.handleFailure} color="primary">
+        <Button key="incorrect" onClick={this.handleFailure} color="primary">
           Incorrect
         </Button>
       </div>
     );
-    const front = <div className={styles.prompt}>{prompt}</div>;
+    const front = (
+      <div>
+        <div className={styles.prompt}>{prompt}</div>
+        <Button key="flip" onClick={this.flipClick} color="primary">
+          Flip
+        </Button>
+      </div>
+    );
 
     return <div className={styles.wrapper}>{flipped ? back : front}</div>;
   }
