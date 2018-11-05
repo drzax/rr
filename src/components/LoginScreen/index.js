@@ -64,7 +64,11 @@ export default class LoginScreen extends React.Component {
 
     return (
       <div>
-        <Dialog open={true} aria-labelledby="form-dialog-title">
+        <Dialog
+          open={true}
+          aria-labelledby="form-dialog-title"
+          BackdropProps={{ invisible: true }}
+        >
           <DialogTitle id="form-dialog-title">Sign-in or sign-up</DialogTitle>
 
           <DialogContent>
