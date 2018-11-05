@@ -93,7 +93,11 @@ export default class App extends React.Component {
       );
 
     if (!user) {
-      return <LoginScreen />;
+      return (
+        <div className={styles.root}>
+          <LoginScreen />
+        </div>
+      );
     }
 
     return (
