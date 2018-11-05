@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./styles.scss";
 import { calendar, GAME_STATES } from "../../constants";
 import { firestore, auth } from "../../firebase";
+import isSameDay from "date-fns/is_same_day";
 import Card from "../Card";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -62,7 +63,8 @@ export default class Game extends React.Component {
   endGame = () => {
     log.debug("endGame");
     this.gameRef.update({
-      gameCount: this.state.gameCount + 1
+      gameCount: this.state.gameCount + 1,
+      lastPlayed: new Date()
     });
     this.setState({
       cardRef: null,
@@ -93,9 +95,13 @@ export default class Game extends React.Component {
       // Save the first game data and come back if it doesn't exist.
       if (!doc.exists) return doc.ref.set({ gameCount: 0 });
 
-      const gameCount = doc.data().gameCount;
+      const { gameCount, lastPlayed } = doc.data();
+      const playedToday = isSameDay(lastPlayed.toDate(), new Date());
+      log.debug("lastPlayed", lastPlayed);
+      log.debug("playedToday", playedToday);
       this.setState({
-        gameCount
+        gameCount,
+        playedToday
       });
 
       this.nextLevels = levelsFromGameCount(gameCount);
@@ -141,41 +147,68 @@ export default class Game extends React.Component {
       gameState,
       cardsDue,
       cardsRemaining,
-      isGameEnd
+      isGameEnd,
+      playedToday
     } = this.state;
 
-    const startButton = cardsRemaining ? (
-      <Button size="large" variant="contained" onClick={this.startGame}>
-        Start reviewing {cardsRemaining} card
-        {cardsRemaining > 1 ? "s" : ""}
-      </Button>
-    ) : (
-      <p>There are no cards to reveiw. Add some?</p>
-    );
+    // const startButton = cardsRemaining ? (
+    //
+    // ) : (
+    //   <p>There are no cards to reveiw. Add some?</p>
+    // );
+
+    const getStartButton = () => {
+      return !playedToday && cardsRemaining ? (
+        <Button
+          size="large"
+          variant="contained"
+          disabled={playedToday}
+          onClick={this.startGame}
+        >
+          Start reviewing {cardsRemaining} card
+          {cardsRemaining > 1 ? "s" : ""}
+        </Button>
+      ) : null;
+    };
+
+    const getAddCardsPrompt = () => {
+      return cardsRemaining ? null : (
+        <p>
+          There are no cards scheduled for the next review. Do you want to add
+          some?
+        </p>
+      );
+    };
+
+    const getEndGameMessage = () => {
+      return isGameEnd ? "Done!" : null;
+    };
+
+    const getWaitMessage = () => {
+      return playedToday && cardsRemaining ? (
+        <p>
+          You've already played to day. Wait until tomorrow to run through the
+          next set of {cardsRemaining} cards.
+        </p>
+      ) : null;
+    };
 
     switch (gameState) {
       case GAME_STATES.LOADING_GAME:
         return <CircularProgress />;
       case GAME_STATES.START_SCREEN:
-        return isGameEnd ? (
+        return (
           <div>
-            <p>Done!</p>
-            {startButton}
+            {getEndGameMessage()}
+            {getWaitMessage()}
+            {getStartButton()}
+            {getAddCardsPrompt()}
           </div>
-        ) : (
-          startButton
         );
       case GAME_STATES.LOADING_CARDS:
         return <CircularProgress />;
       case GAME_STATES.PLAYING:
         return <Card data={cardData} handleResult={this.handleResult} />;
-      case GAME_STATES.GAME_END:
-        return (
-          <div>
-            <p>Done!</p>
-            {startButton}
-          </div>
-        );
     }
   }
 }
