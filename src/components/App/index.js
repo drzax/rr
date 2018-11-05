@@ -55,6 +55,11 @@ export default class App extends React.Component {
               // this.setState({ user: usercred.user });
               window.localStorage.removeItem("emailForSignIn");
               this.setState({ user, awaitingLogin: false });
+              window.history.replaceState(
+                null,
+                null,
+                window.location.href.replace(window.location.search, "")
+              );
             })
             .catch(log.error);
         } else {
@@ -69,6 +74,11 @@ export default class App extends React.Component {
               // You can check if the user is new or existing:
               // result.additionalUserInfo.isNewUser
               this.setState({ user, awaitingLogin: false });
+              window.history.replaceState(
+                null,
+                null,
+                window.location.href.replace(window.location.search, "")
+              );
             })
             .catch(log.error);
         }
