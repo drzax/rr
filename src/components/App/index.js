@@ -97,6 +97,7 @@ export default class App extends React.Component {
   }
 
   handleSuperUserToggle = ev => {
+    if (ev.target !== document.body) return;
     if (ev.key === "s") this.s = true;
     setTimeout(() => (this.s = false), 500);
     if (ev.key === "u" && this.s) {
