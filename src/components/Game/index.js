@@ -1,16 +1,13 @@
 import React from "react";
 import styles from "./styles.scss";
 import { calendar, GAME_STATES } from "../../constants";
+import { levelsFromGameCount } from "../../utils";
 import { firestore, auth } from "../../firebase";
 import isSameDay from "date-fns/is_same_day";
 import Card from "../Card";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import * as log from "loglevel";
-
-const levelsFromGameCount = gameCount => {
-  return calendar[gameCount % 64].slice();
-};
 
 export default class Game extends React.Component {
   constructor() {
@@ -55,6 +52,7 @@ export default class Game extends React.Component {
       "levelCards",
       this.cardsRef
         .where("level", "==", this.nextLevel)
+        .orderBy("lastAttempt", "asc")
         .limit(1)
         .onSnapshot(onCards)
     );
