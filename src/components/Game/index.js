@@ -4,7 +4,7 @@ import { calendar, GAME_STATES } from "../../constants";
 import { levelsFromGameCount } from "../../utils";
 import { firestore, auth } from "../../firebase";
 import isSameDay from "date-fns/is_same_day";
-import Card from "../Card";
+import FlashCard from "../Card";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import * as log from "loglevel";
@@ -207,7 +207,7 @@ export default class Game extends React.Component {
       case GAME_STATES.LOADING_CARDS:
         return <CircularProgress />;
       case GAME_STATES.PLAYING:
-        return <Card data={cardData} handleResult={this.handleResult} />;
+        return <FlashCard data={cardData} handleResult={this.handleResult} />;
     }
   }
 }

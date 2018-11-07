@@ -1,8 +1,14 @@
 import React from "react";
 import styles from "./styles.scss";
 import Button from "@material-ui/core/Button";
+import Markdown from "react-markdown";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
-export default class Card extends React.Component {
+export default class FlashCard extends React.Component {
   constructor() {
     super();
     this.state = { flipped: false };
@@ -41,27 +47,39 @@ export default class Card extends React.Component {
   render() {
     const { prompt, answer } = this.props.data;
     const { flipped } = this.state;
+    const actions = [];
 
-    const back = (
-      <div>
-        <div className={styles.answer}>{answer}</div>
+    if (flipped) {
+      actions.push(
         <Button key="correct" onClick={this.handleSuccess} color="primary">
-          Correct
+          <CheckIcon />
         </Button>
+      );
+      actions.push(
         <Button key="incorrect" onClick={this.handleFailure} color="primary">
-          Incorrect
+          <CloseIcon />
         </Button>
-      </div>
-    );
-    const front = (
-      <div>
-        <div className={styles.prompt}>{prompt}</div>
+      );
+    } else {
+      actions.push(
         <Button key="flip" onClick={this.flipClick} color="primary">
           Flip
         </Button>
-      </div>
-    );
+      );
+    }
 
-    return <div className={styles.wrapper}>{flipped ? back : front}</div>;
+    return (
+      <Card className={styles.wrapper}>
+        <CardContent className={styles.content}>
+          <Markdown
+            className={styles.answer}
+            source={flipped ? answer : prompt}
+          />
+        </CardContent>
+        <CardActions className={styles.cardActions}>
+          {actions.map(action => action)}
+        </CardActions>
+      </Card>
+    );
   }
 }

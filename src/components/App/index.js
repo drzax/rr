@@ -128,8 +128,8 @@ export default class App extends React.Component {
 
     if (awaitingLogin)
       return (
-        <div className={styles.root}>
-          <CircularProgress />
+        <div className={styles.loading}>
+          <CircularProgress className={styles.progress} />
         </div>
       );
 
@@ -143,10 +143,17 @@ export default class App extends React.Component {
 
     return (
       <div className={styles.root}>
-        <Game user={user} superUser={superUser} />
-        <AddCard user={user} />
-        <UserProfile user={user} />
+        <div className={styles.gamePanel}>
+          <Game user={user} superUser={superUser} />
+        </div>
+
+        <div className={styles.actionsPanel}>
+          <UserProfile user={user} />
+          <AddCard user={user} />
+        </div>
+
         {superUser ? <InsightPanel user={user} /> : null}
+
         <Snackbar
           open={!!message}
           onClose={this.handleCloseSnackbar}
