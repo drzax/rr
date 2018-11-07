@@ -8,6 +8,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { auth, firebase } from "../../firebase";
 import UserProfile from "../UserProfile";
 import LoginScreen from "../LoginScreen";
+import InsightPanel from "../InsightPanel";
 import * as log from "loglevel";
 
 export default class App extends React.Component {
@@ -139,6 +140,7 @@ export default class App extends React.Component {
         <Game user={user} superUser={superUser} />
         <AddCard user={user} />
         <UserProfile user={user} />
+        {superUser ? <InsightPanel user={user} /> : null}
         <Snackbar
           open={!!message}
           onClose={this.handleCloseSnackbar}
