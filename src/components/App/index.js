@@ -89,6 +89,9 @@ export default class App extends React.Component {
     });
 
     window.addEventListener("keyup", this.handleSuperUserToggle);
+    if (window.localStorage.superUser) {
+      this.setState({ superUser: true });
+    }
   }
 
   componentWillUnmount() {
@@ -106,6 +109,7 @@ export default class App extends React.Component {
         ? "Super user mode enabled 💯"
         : "Super user mode disabled";
       if (superUser) log.setLevel("debug");
+      window.localStorage.superUser = superUser;
       this.setState({ superUser, message });
       this.s = false;
     }
