@@ -104,6 +104,7 @@ export default class App extends React.Component {
       const message = superUser
         ? "Super user mode enabled 💯"
         : "Super user mode disabled";
+      if (superUser) log.setLevel("debug");
       this.setState({ superUser, message });
       this.s = false;
     }
