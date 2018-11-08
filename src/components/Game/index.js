@@ -186,7 +186,7 @@ export default class Game extends React.Component {
     const getWaitMessage = () => {
       return playedToday && cardsRemaining ? (
         <p>
-          You've already played to day. Wait until tomorrow to run through the
+          You've already played today. Wait until tomorrow to run through the
           next set of {cardsRemaining} cards.
         </p>
       ) : null;
