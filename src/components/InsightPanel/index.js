@@ -49,34 +49,42 @@ export default class InsightPanel extends React.Component {
         {user ? (
           <table>
             <caption>User data</caption>
-            {["email", "isAnonymous", "emailVerified", "uid"].map(key => (
-              <tr key={key}>
-                <th>{key}</th>
-                <td>{user[key] ? user[key].toString() : null}</td>
-              </tr>
-            ))}
+            <tbody>
+              {["email", "isAnonymous", "emailVerified", "uid"].map(key => (
+                <tr key={key}>
+                  <th>{key}</th>
+                  <td>{user[key] ? user[key].toString() : null}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         ) : null}
         {game ? (
           <table>
             <caption>Game data</caption>
-            {["gameCount", "lastPlayed"].map(key => (
-              <tr key={key}>
-                <th>{key}</th>
-                <td>{game[key] ? game[key].toString() : null}</td>
-              </tr>
-            ))}
+            <tbody>
+              {["gameCount", "lastPlayed"].map(key => (
+                <tr key={key}>
+                  <th>{key}</th>
+                  <td>{game[key] ? game[key].toString() : null}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         ) : null}
         {game ? (
           <table>
             <caption>Playing levels</caption>
-            {["today", "tomorrow", "the next day"].map((key, idx) => (
-              <tr key={key}>
-                <th>{key}</th>
-                <td>{levelsFromGameCount(game.gameCount + idx).toString()}</td>
-              </tr>
-            ))}
+            <tbody>
+              {["today", "tomorrow", "the next day"].map((key, idx) => (
+                <tr key={key}>
+                  <th>{key}</th>
+                  <td>
+                    {levelsFromGameCount(game.gameCount + idx).toString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         ) : null}
         {cardsByLevel ? (
