@@ -2,6 +2,9 @@ const path = require("path");
 const webpack = require("webpack");
 module.exports = {
   type: "react",
+  devServer: {
+    https: true
+  },
   webpack: config => {
     config.plugins.push(
       new webpack.DefinePlugin({
