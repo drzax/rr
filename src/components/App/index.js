@@ -45,6 +45,14 @@ export default class App extends React.Component {
           window.location.href
         );
 
+        const purgeLoginUrl = () => {
+          window.history.replaceState(
+            null,
+            document.title,
+            window.location.href.replace(window.location.search, "")
+          );
+        };
+
         // Link the credential to the current user.
         if (user) {
           user
@@ -56,11 +64,7 @@ export default class App extends React.Component {
               // this.setState({ user: usercred.user });
               window.localStorage.removeItem("emailForSignIn");
               this.setState({ user, awaitingLogin: false });
-              window.history.replaceState(
-                null,
-                null,
-                window.location.href.replace(window.location.search, "")
-              );
+              purgeLoginUrl();
             })
             .catch(log.error);
         } else {
@@ -75,11 +79,7 @@ export default class App extends React.Component {
               // You can check if the user is new or existing:
               // result.additionalUserInfo.isNewUser
               this.setState({ user, awaitingLogin: false });
-              window.history.replaceState(
-                null,
-                null,
-                window.location.href.replace(window.location.search, "")
-              );
+              purgeLoginUrl();
             })
             .catch(log.error);
         }
