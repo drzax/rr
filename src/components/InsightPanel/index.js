@@ -90,12 +90,14 @@ export default class InsightPanel extends React.Component {
         {cardsByLevel ? (
           <table>
             <caption>Cards by level</caption>
-            {Object.keys(cardsByLevel).map(key => (
-              <tr key={`level-${key}`}>
-                <th>{key}</th>
-                <td>{cardsByLevel[key]}</td>
-              </tr>
-            ))}
+            <tbody>
+              {Object.keys(cardsByLevel).map(key => (
+                <tr key={`level-${key}`}>
+                  <th>{key}</th>
+                  <td>{cardsByLevel[key]}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         ) : null}
       </div>
