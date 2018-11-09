@@ -10,6 +10,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { firestore } from "../../firebase";
 import * as log from "loglevel";
 
@@ -28,6 +29,7 @@ export default class AddCard extends React.Component {
   };
 
   handleSave = () => {
+    this.setState({ saving: true });
     const cardData = {
       uid: this.props.user.uid,
       level: 1,
@@ -38,9 +40,17 @@ export default class AddCard extends React.Component {
       .collection("cards")
       .doc()
       .set(cardData)
-      .then(log.debug)
-      .catch(log.error);
-    this.setState({ open: false });
+      .then(() => {
+        this.setState({ open: false, saving: false, formData: {} });
+      })
+      .catch(err => {
+        // todo: log this somewhere accessible.
+        log.error(err);
+        this.setState({
+          saving: false,
+          error: "Error saving card. Please try again."
+        });
+      });
   };
 
   handleInputChange = ({ target }) => {
@@ -57,7 +67,7 @@ export default class AddCard extends React.Component {
   };
 
   render() {
-    const { formData } = this.state;
+    const { formData, saving, error } = this.state;
     log.debug("formData", formData);
     return (
       <div className={styles.wrapper}>
@@ -95,7 +105,6 @@ export default class AddCard extends React.Component {
               fullWidth
             />
             <TextField
-              autoFocus
               margin="dense"
               id="answer"
               name="answer"
@@ -109,10 +118,16 @@ export default class AddCard extends React.Component {
             />
           </DialogContent>
           <DialogActions>
+            {saving ? <CircularProgress size={20} /> : null}
+            {error ? <p>{error}</p> : null}
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleSave} color="primary">
+            <Button
+              onClick={this.handleSave}
+              disabled={!!saving}
+              color="primary"
+            >
               Save
             </Button>
           </DialogActions>
