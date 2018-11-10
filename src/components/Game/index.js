@@ -84,10 +84,9 @@ export default class Game extends React.Component {
   };
 
   componentWillMount() {
-    this.gameRef = firestore.collection("games").doc(this.props.user.uid);
-    this.cardsRef = firestore
-      .collection("cards")
-      .where("uid", "==", this.props.user.uid);
+    const { uid } = this.props;
+    this.gameRef = firestore.collection("games").doc(uid);
+    this.cardsRef = firestore.collection("cards").where("uid", "==", uid);
 
     const handleGameData = doc => {
       // Save the first game data and come back if it doesn't exist.

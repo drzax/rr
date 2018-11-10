@@ -2,15 +2,17 @@ import React from "react";
 import styles from "./styles.scss";
 import Avatar from "@material-ui/core/Avatar";
 import Face from "@material-ui/icons/Face";
-import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button";
+import LogoutButton from "../LogoutButton";
+import LoginButtonEmail from "../LoginButtonEmail";
+import { NotificationsConsumer } from "../Notifications/context";
 import * as log from "loglevel";
-import { auth } from "../../firebase";
 
 export default class UserProfile extends React.Component {
   state = {
@@ -24,29 +26,6 @@ export default class UserProfile extends React.Component {
 
   handleClose = () => {
     this.setState({ open: false });
-  };
-
-  handleLogout = () => {
-    log.debug("logout");
-    auth
-      .signOut()
-      .then(() => {
-        this.setState({ open: false });
-      })
-      .catch(log.error);
-  };
-
-  handleSubmit = () => {
-    const { email } = this.state.formData;
-    const actionCodeSettings = {
-      url: window.location.href,
-      handleCodeInApp: true
-    };
-
-    auth
-      .sendSignInLinkToEmail(email, actionCodeSettings)
-      .then(() => window.localStorage.setItem("emailForSignIn", email))
-      .catch(log.error);
   };
 
   handleInputChange = ({ target }) => {
@@ -109,17 +88,20 @@ export default class UserProfile extends React.Component {
             </DialogContent>
           ) : null}
           <DialogActions>
-            <Button onClick={this.handleLogout} color="primary">
-              Logout
-            </Button>
+            <NotificationsConsumer>
+              {({ open }) => <LogoutButton notify={open} />}
+            </NotificationsConsumer>
 
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
+
             {user.isAnonymous ? (
-              <Button onClick={this.handleSubmit} color="primary">
-                Submit
-              </Button>
+              <NotificationsConsumer>
+                {({ open }) => (
+                  <LoginButtonEmail notify={open} email={formData.email} />
+                )}
+              </NotificationsConsumer>
             ) : null}
           </DialogActions>
         </Dialog>

@@ -7,60 +7,24 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
+import LoginButtonEmail from "../LoginButtonEmail";
+import LoginButtonAnon from "../LoginButtonAnon";
+import { NotificationsConsumer } from "../Notifications/context";
 import * as log from "loglevel";
-import { auth } from "../../firebase";
 
 export default class LoginScreen extends React.Component {
-  state = {
-    message: null,
-    formData: {}
-  };
-
-  anonSignIn = () => {
-    this.setState({ message: "Hold tight, creating an anonymous account ..." });
-    auth.signInAnonymously();
-  };
-
-  handleSubmit = () => {
-    this.setState({ message: "Sending sign-in email" });
-    const { email } = this.state.formData;
-    const actionCodeSettings = {
-      url: window.location.href,
-      handleCodeInApp: true
-    };
-
-    auth
-      .sendSignInLinkToEmail(email, actionCodeSettings)
-      .then(() => {
-        window.localStorage.setItem("emailForSignIn", email);
-        this.setState({
-          message: "Please check your email for a sign-in link"
-        });
-      })
-      .catch(error => {
-        log.error(error);
-        this.setState({
-          message: "Sign-in failed. Are you sure your email address is correct?"
-        });
-      });
-  };
+  state = { email: "" };
 
   handleInputChange = ({ target }) => {
     const name = target.name;
     const value = target.type === "checkbox" ? target.checked : target.value;
-
     this.setState({
-      formData: {
-        ...this.state.formData,
-        [name]: value
-      }
+      [name]: value
     });
   };
 
   render() {
-    const { formData, message } = this.state;
+    const { email } = this.state;
 
     return (
       <div>
@@ -83,30 +47,22 @@ export default class LoginScreen extends React.Component {
               label="Email address"
               type="email"
               variant="outlined"
-              value={formData.email || ""}
+              value={email}
               onChange={this.handleInputChange}
               fullWidth
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={this.anonSignIn}>Use anonymously</Button>
-            <Button
-              onClick={this.handleSubmit}
-              color="primary"
-              disabled={!(formData.email && formData.email.length > 3)}
-            >
-              Sign-in
-            </Button>
-          </DialogActions>
+          <NotificationsConsumer>
+            {({ open }) => {
+              return (
+                <DialogActions>
+                  <LoginButtonAnon notify={open} />
+                  <LoginButtonEmail notify={open} email={email} />
+                </DialogActions>
+              );
+            }}
+          </NotificationsConsumer>
         </Dialog>
-        <Snackbar
-          open={!!message}
-          anchorOrigin={{ vertical: "top", horizontal: "left" }}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">{message}</span>}
-        />
       </div>
     );
   }

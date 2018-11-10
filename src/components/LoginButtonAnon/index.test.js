@@ -1,12 +1,11 @@
 const React = require("react");
 const renderer = require("react-test-renderer");
 
-const LoginScreen = require(".");
+const LoginButtonEmail = require(".");
 
-describe("LoginScreen", () => {
+describe("LoginButtonEmail", () => {
   test("It renders", () => {
-    const component = renderer.create(<LoginScreen />);
-
+    const component = renderer.create(<LoginButtonEmail />);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
