@@ -1,5 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
+const { GenerateSW } = require("workbox-webpack-plugin");
+
 module.exports = {
   type: "react",
   devServer: {
@@ -16,6 +18,16 @@ module.exports = {
         FB_MESSGING_SENDER_ID: JSON.stringify(process.env.FB_MESSGING_SENDER_ID)
       })
     );
+    config.plugins.push(
+      new GenerateSW({
+        // importWorkboxFrom: "local",
+        // these options encourage the ServiceWorkers to get in there fast
+        // and not allow any straggling "old" SWs to hang around
+        clientsClaim: true,
+        skipWaiting: true
+      })
+    );
+
     return config;
   },
   babel: config => {
