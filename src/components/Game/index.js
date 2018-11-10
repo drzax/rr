@@ -44,7 +44,7 @@ export default class Game extends React.Component {
 
       // TODO This sorting can go after missing lastAttempt fields are comprehensively dealt with.
       const cards = [];
-      snapshot.forEach(card => cards.push(card));
+      snapshot.forEach(card => !card.data().deleted && cards.push(card));
       cards.sort((a, b) => {
         const tsa = a.data().lastAttempt;
         const tsb = b.data().lastAttempt;
@@ -52,7 +52,7 @@ export default class Game extends React.Component {
         return sort;
       });
       const card = cards[0];
-
+      if (!card) return this.playNextLevel();
       // const card = snapshot.docs[0];
 
       this.setState({
@@ -140,7 +140,8 @@ export default class Game extends React.Component {
 
     snapshot.forEach(card => {
       const data = card.data();
-      if (this.nextLevels.indexOf(data.level) > -1) cardsRemaining++;
+      if (this.nextLevels.indexOf(data.level) > -1 && !data.deleted)
+        cardsRemaining++;
     });
     this.setState({ cardsRemaining });
 
@@ -159,6 +160,7 @@ export default class Game extends React.Component {
   render() {
     const {
       cardData,
+      cardRef,
       gameState,
       cardsDue,
       cardsRemaining,
@@ -221,7 +223,13 @@ export default class Game extends React.Component {
       case GAME_STATES.LOADING_CARDS:
         return <CircularProgress />;
       case GAME_STATES.PLAYING:
-        return <FlashCard data={cardData} handleResult={this.handleResult} />;
+        return (
+          <FlashCard
+            data={cardData}
+            cardRef={cardRef}
+            handleResult={this.handleResult}
+          />
+        );
     }
   }
 }

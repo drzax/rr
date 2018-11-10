@@ -7,6 +7,8 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditCard from "../EditCard";
 
 export default class FlashCard extends React.Component {
   constructor() {
@@ -20,6 +22,14 @@ export default class FlashCard extends React.Component {
 
   flipClick = () => {
     this.setState({ flipped: true });
+  };
+
+  deleteCard = () => {
+    this.props.cardRef
+      .update({
+        deleted: true
+      })
+      .then(() => {});
   };
 
   handleSuccess = () => {
@@ -37,15 +47,18 @@ export default class FlashCard extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener("keyup", this.flipKeyboard);
+    // window.addEventListener("keyup", this.flipKeyboard);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keyup", this.flipKeyboard);
+    // window.removeEventListener("keyup", this.flipKeyboard);
   }
 
   render() {
-    const { prompt, answer } = this.props.data;
+    const {
+      cardRef,
+      data: { prompt, answer }
+    } = this.props;
     const { flipped } = this.state;
     const actions = [];
 
@@ -69,7 +82,7 @@ export default class FlashCard extends React.Component {
     }
 
     return (
-      <Card className={styles.wrapper}>
+      <Card className={styles.wrapper} onKeyup={this.flipKeyboard}>
         <CardContent className={styles.content}>
           <Markdown
             className={styles.answer}
@@ -77,7 +90,13 @@ export default class FlashCard extends React.Component {
           />
         </CardContent>
         <CardActions className={styles.cardActions}>
-          {actions.map(action => action)}
+          <div class={styles.edit}>
+            <EditCard cardRef={cardRef} />
+            <Button secondary aria-label="Delete" onClick={this.deleteCard}>
+              <DeleteIcon />
+            </Button>
+          </div>
+          <div className={styles.play}>{actions.map(action => action)}</div>
         </CardActions>
       </Card>
     );

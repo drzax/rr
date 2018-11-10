@@ -3,11 +3,11 @@ import styles from "./styles.scss";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
+import EditIcon from "@material-ui/icons/Edit";
 import CardEditDialog from "../CardEditDialog";
 import * as log from "loglevel";
 
-export default class AddCard extends React.Component {
+export default class EditCard extends React.Component {
   state = {
     open: false
   };
@@ -22,20 +22,20 @@ export default class AddCard extends React.Component {
 
   render() {
     const { open } = this.state;
-    const { uid } = this.props;
+    const { uid, cardRef } = this.props;
 
     return (
-      <div className={styles.wrapper}>
-        <Button
-          variant="fab"
-          color="primary"
-          aria-label="Add"
-          onClick={this.handleOpen}
-        >
-          <AddIcon />
+      <span>
+        <Button secondary aria-label="Edit" onClick={this.handleOpen}>
+          <EditIcon />
         </Button>
-        <CardEditDialog uid={uid} open={open} onClose={this.handleClose} />
-      </div>
+        <CardEditDialog
+          cardRef={cardRef}
+          uid={uid}
+          open={open}
+          onClose={this.handleClose}
+        />
+      </span>
     );
   }
 }

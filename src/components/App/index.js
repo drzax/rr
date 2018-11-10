@@ -20,55 +20,9 @@ export default class App extends React.Component {
   signinLinkProcessed = false;
 
   componentWillMount() {
-    this.offAuthStateChanged = auth.onAuthStateChanged(user => {
-      log.debug("user", user);
-
-      // Confirm the link is a sign-in with email link.
-      if (
-        this.signinLinkProcessed === false &&
-        auth.isSignInWithEmailLink(window.location.href)
-      ) {
-        this.signinLinkProcessed = true;
-        var email = window.localStorage.getItem("emailForSignIn");
-
-        if (!email) {
-          email = window.prompt("Please provide your email for confirmation");
-        }
-
-        // Construct the email link credential from the current URL.
-        var credential = firebase.auth.EmailAuthProvider.credentialWithLink(
-          email,
-          window.location.href
-        );
-
-        // Link the credential to the current user.
-        if (user) {
-          user
-            .linkAndRetrieveDataWithCredential(credential)
-            .then(usercred => {
-              log.debug("usercred", usercred);
-              window.localStorage.removeItem("emailForSignIn");
-              this.setState({ user, awaitingLogin: false });
-              purgeLoginUrl();
-            })
-            .catch(log.error);
-        } else {
-          auth
-            .signInWithEmailLink(email, window.location.href)
-            .then(result => {
-              window.localStorage.removeItem("emailForSignIn");
-              this.setState({ user, awaitingLogin: false });
-              purgeLoginUrl();
-            })
-            .catch(err => {
-              log.error(email, err);
-            });
-        }
-      } else {
-        this.setState({ user, awaitingLogin: false });
-      }
-    });
-
+    this.offAuthStateChanged = auth.onAuthStateChanged(
+      this.handleAuthStateChanged
+    );
     window.addEventListener("keyup", this.handleSuperUserToggle);
     if (window.localStorage.superUser) {
       this.setState({ superUser: true });
@@ -79,6 +33,55 @@ export default class App extends React.Component {
     this.offAuthStateChanged();
     window.removeEventListener("keyup", this.handleSuperUserToggle);
   }
+
+  handleAuthStateChanged = user => {
+    log.debug("user", user);
+
+    // Confirm the link is a sign-in with email link.
+    if (
+      this.signinLinkProcessed === false &&
+      auth.isSignInWithEmailLink(window.location.href)
+    ) {
+      this.signinLinkProcessed = true;
+      var email = window.localStorage.getItem("emailForSignIn");
+
+      if (!email) {
+        email = window.prompt("Please provide your email for confirmation");
+      }
+
+      // Construct the email link credential from the current URL.
+      var credential = firebase.auth.EmailAuthProvider.credentialWithLink(
+        email,
+        window.location.href
+      );
+
+      // Link the credential to the current user.
+      if (user) {
+        user
+          .linkAndRetrieveDataWithCredential(credential)
+          .then(usercred => {
+            log.debug("usercred", usercred);
+            window.localStorage.removeItem("emailForSignIn");
+            this.setState({ user, awaitingLogin: false });
+            purgeLoginUrl();
+          })
+          .catch(log.error);
+      } else {
+        auth
+          .signInWithEmailLink(email, window.location.href)
+          .then(result => {
+            window.localStorage.removeItem("emailForSignIn");
+            this.setState({ user, awaitingLogin: false });
+            purgeLoginUrl();
+          })
+          .catch(err => {
+            log.error(email, err);
+          });
+      }
+    } else {
+      this.setState({ user, awaitingLogin: false });
+    }
+  };
 
   handleSuperUserToggle = ev => {
     if (ev.target !== document.body) return;
@@ -140,7 +143,7 @@ export default class App extends React.Component {
 
           <div className={styles.actionsPanel}>
             <UserProfile user={user} />
-            <AddCard user={user} />
+            <AddCard uid={user.uid} />
           </div>
 
           {superUser ? <InsightPanel user={user} /> : null}
