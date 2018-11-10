@@ -82,7 +82,7 @@ export default class FlashCard extends React.Component {
     }
 
     return (
-      <Card className={styles.wrapper} onKeyup={this.flipKeyboard}>
+      <Card className={styles.wrapper}>
         <CardContent className={styles.content}>
           <Markdown
             className={styles.answer}
