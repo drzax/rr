@@ -1,10 +1,10 @@
-const React = require('react');
-const renderer = require('react-test-renderer');
+import React from "react";
+import renderer from "react-test-renderer";
 
-const CardEditDialog = require('.');
+import CardEditDialog from ".";
 
-describe('CardEditDialog', () => {
-  test('It renders', () => {
+describe("CardEditDialog", () => {
+  test("It renders", () => {
     const component = renderer.create(<CardEditDialog />);
 
     let tree = component.toJSON();

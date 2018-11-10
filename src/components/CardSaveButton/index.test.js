@@ -1,10 +1,10 @@
-const React = require('react');
-const renderer = require('react-test-renderer');
+import React from "react";
+import renderer from "react-test-renderer";
 
-const CardSaveButton = require('.');
+import CardSaveButton from ".";
 
-describe('CardSaveButton', () => {
-  test('It renders', () => {
+describe("CardSaveButton", () => {
+  test("It renders", () => {
     const component = renderer.create(<CardSaveButton />);
 
     let tree = component.toJSON();

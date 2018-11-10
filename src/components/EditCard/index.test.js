@@ -1,10 +1,10 @@
-const React = require('react');
-const renderer = require('react-test-renderer');
+import React from "react";
+import renderer from "react-test-renderer";
 
-const Home = require('.');
+import Home from ".";
 
-describe('Home', () => {
-  test('It renders', () => {
+describe("Home", () => {
+  test("It renders", () => {
     const component = renderer.create(<Home />);
 
     let tree = component.toJSON();
