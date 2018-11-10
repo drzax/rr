@@ -16,6 +16,7 @@ import GameActions from "../GameActions";
 import CardEditDialog from "../CardEditDialog";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
+import MainMenu from "../MainMenu";
 
 export class App extends React.Component {
   componentDidMount() {
@@ -34,6 +35,10 @@ export class App extends React.Component {
     if (subscribed && uid)
       return (
         <div className={styles.root}>
+          <MainMenu
+            className={styles.menu}
+            username={user.isAnonymous ? "Anonymous" : user.email}
+          />
           <div className={styles.gamePanel}>
             <Game />
           </div>
