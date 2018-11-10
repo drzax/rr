@@ -33,6 +33,7 @@ export default class AddCard extends React.Component {
     const cardData = {
       uid: this.props.user.uid,
       level: 1,
+      lastAttempt: new Date(),
       ...this.state.formData
     };
     log.debug("cardData", cardData);

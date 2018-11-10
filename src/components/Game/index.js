@@ -32,6 +32,7 @@ export default class Game extends React.Component {
     log.debug("this.nextLevelIndex", this.nextLevelIndex);
     log.debug("this.nextLevel", this.nextLevel);
     log.debug("this.nextLevels", this.nextLevels);
+
     // If there is no next level, exit here, the game is over.
     if (this.nextLevel === undefined) return this.endGame();
 
@@ -40,7 +41,20 @@ export default class Game extends React.Component {
         this.listeners.get("levelCards")();
         return this.playNextLevel();
       }
-      const card = snapshot.docs[0];
+
+      // TODO This sorting can go after missing lastAttempt fields are comprehensively dealt with.
+      const cards = [];
+      snapshot.forEach(card => cards.push(card));
+      cards.sort((a, b) => {
+        const tsa = a.data().lastAttempt;
+        const tsb = b.data().lastAttempt;
+        const sort = (tsa ? tsa.toMillis() : 0) - (tsb ? tsb.toMillis() : 0);
+        return sort;
+      });
+      const card = cards[0];
+
+      // const card = snapshot.docs[0];
+
       this.setState({
         gameState: GAME_STATES.PLAYING,
         cardData: card.data(),
@@ -52,8 +66,9 @@ export default class Game extends React.Component {
       "levelCards",
       this.cardsRef
         .where("level", "==", this.nextLevel)
-        .orderBy("lastAttempt", "asc")
-        .limit(1)
+        // TODO: put this back after dealing comprehensively with cards missing a lastAttempt date.
+        // .orderBy("lastAttempt", "asc")
+        // .limit(1)
         .onSnapshot(onCards)
     );
   }
