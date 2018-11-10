@@ -12,15 +12,20 @@ export default class InsightPanel extends React.Component {
       .onSnapshot(snapshot => {
         const totalCards = snapshot.size;
         let cardsByLevel = [];
+        let deletedCards = 0;
 
         snapshot.forEach(card => {
           const data = card.data();
-          cardsByLevel[data.level] = cardsByLevel[data.level]
-            ? cardsByLevel[data.level] + 1
-            : 1;
+          if (data.deleted) {
+            deletedCards++;
+          } else {
+            cardsByLevel[data.level] = cardsByLevel[data.level]
+              ? cardsByLevel[data.level] + 1
+              : 1;
+          }
         });
 
-        this.setState({ totalCards, cardsByLevel });
+        this.setState({ totalCards, cardsByLevel, deletedCards });
       });
 
     this.unsubscribeGame = firestore
@@ -37,7 +42,7 @@ export default class InsightPanel extends React.Component {
   }
 
   render() {
-    const { totalCards, game, cardsByLevel } = this.state;
+    const { totalCards, game, cardsByLevel, deletedCards } = this.state;
     const { user } = this.props;
 
     // Never show this on a production build
@@ -97,6 +102,16 @@ export default class InsightPanel extends React.Component {
                   <td>{cardsByLevel[key]}</td>
                 </tr>
               ))}
+              {deletedCards ? (
+                <tr key="deleted">
+                  <th>Deleted</th>
+                  <td>{deletedCards}</td>
+                </tr>
+              ) : null}
+              <tr key="total">
+                <th>Total</th>
+                <td>{totalCards}</td>
+              </tr>
             </tbody>
           </table>
         ) : null}
