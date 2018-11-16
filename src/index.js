@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import App from "./components/App";
+import Root from "./components/Root";
 import ErrorBox from "./components/ErrorBox";
 import * as log from "loglevel";
 
@@ -8,13 +8,13 @@ const PROJECT_NAME = "rr";
 const root = document.querySelector(`[data-${PROJECT_NAME}-root]`);
 
 function init() {
-  render(<App projectName={PROJECT_NAME} />, root);
+  render(<Root projectName={PROJECT_NAME} />, root);
 }
 
 init();
 
 if (module.hot) {
-  module.hot.accept("./components/App", () => {
+  module.hot.accept("./components/Root", () => {
     try {
       init();
     } catch (err) {
