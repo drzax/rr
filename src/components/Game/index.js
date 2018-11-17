@@ -1,235 +1,109 @@
 import React from "react";
 import styles from "./styles.scss";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import {
+  cardsSubscribe,
+  cardsUnsubscribe,
+  recordCardAttempt
+} from "../../ducks/cards";
+import { requestGameData, startGame, endGame } from "../../ducks/game";
 import { calendar, GAME_STATES } from "../../constants";
-import { levelsFromGameCount } from "../../utils";
-import { firestore, auth } from "../../firebase";
-import isSameDay from "date-fns/is_same_day";
-import FlashCard from "../Card";
-import Button from "@material-ui/core/Button";
+import {
+  getCurrentCardCount,
+  getNextCard,
+  gameIsLoaded
+} from "../../ducks/selectors";
+
+// Components
+import FlashCard from "../FlashCard";
+import GameStartButton from "../GameStartButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
+
+// Misc
 import * as log from "loglevel";
+import isSameDay from "date-fns/is_same_day";
 
-export default class Game extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      gameState: GAME_STATES.LOADING_GAME
-    };
-    this.listeners = new Map();
-  }
-
-  handleResult = result => {
-    const { cardRef, cardData } = this.state;
-    cardRef.update({
-      level: result ? cardData.level + 1 : 1,
-      lastAttempt: new Date()
-    });
-  };
-
-  playNextLevel() {
-    this.nextLevelIndex = this.nextLevelIndex + 1;
-    this.nextLevel = this.nextLevels[this.nextLevelIndex];
-    log.debug("this.nextLevelIndex", this.nextLevelIndex);
-    log.debug("this.nextLevel", this.nextLevel);
-    log.debug("this.nextLevels", this.nextLevels);
-
-    // If there is no next level, exit here, the game is over.
-    if (this.nextLevel === undefined) return this.endGame();
-
-    const onCards = snapshot => {
-      if (snapshot.size === 0) {
-        this.listeners.get("levelCards")();
-        return this.playNextLevel();
-      }
-
-      // TODO This sorting can go after missing lastAttempt fields are comprehensively dealt with.
-      const cards = [];
-      snapshot.forEach(card => !card.data().deleted && cards.push(card));
-      cards.sort((a, b) => {
-        const tsa = a.data().lastAttempt;
-        const tsb = b.data().lastAttempt;
-        const sort = (tsa ? tsa.toMillis() : 0) - (tsb ? tsb.toMillis() : 0);
-        return sort;
-      });
-      const card = cards[0];
-      if (!card) return this.playNextLevel();
-      // const card = snapshot.docs[0];
-
-      this.setState({
-        gameState: GAME_STATES.PLAYING,
-        cardData: card.data(),
-        cardRef: card.ref
-      });
-    };
-
-    this.listeners.set(
-      "levelCards",
-      this.cardsRef
-        .where("level", "==", this.nextLevel)
-        // TODO: put this back after dealing comprehensively with cards missing a lastAttempt date.
-        // .orderBy("lastAttempt", "asc")
-        // .limit(1)
-        .onSnapshot(onCards)
-    );
-  }
-
-  endGame = () => {
-    log.debug("endGame");
-    this.gameRef.update({
-      gameCount: this.state.gameCount + 1,
-      lastPlayed: new Date()
-    });
-    this.setState({
-      cardRef: null,
-      cardData: null,
-      gameState: GAME_STATES.START_SCREEN,
-      isGameEnd: true
-    });
-  };
-
-  startGame = () => {
-    log.debug("startGame");
-    const cardsDue = this.state.cardsRemaining;
-    this.setState({
-      cardsDue: this.state.cardsRemaining,
-      isGameEnd: false
-    });
-    this.nextLevelIndex = -1;
-    this.playNextLevel();
-  };
-
+export class Game extends React.Component {
   componentWillMount() {
-    const { uid } = this.props;
-    this.gameRef = firestore.collection("games").doc(uid);
-    this.cardsRef = firestore.collection("cards").where("uid", "==", uid);
-
-    const handleGameData = doc => {
-      // Save the first game data and come back if it doesn't exist.
-      if (!doc.exists) return doc.ref.set({ gameCount: 0 });
-
-      const { gameCount, lastPlayed } = doc.data();
-      const playedToday = isSameDay(
-        lastPlayed ? lastPlayed.toDate() : new Date(2018, 11, 4),
-        new Date()
-      );
-      log.debug("lastPlayed", lastPlayed);
-      log.debug("playedToday", playedToday);
-      this.setState({
-        gameCount,
-        playedToday
-      });
-
-      this.nextLevels = levelsFromGameCount(gameCount);
-      log.debug("this.nextLevels", this.nextLevels);
-
-      // The card count listener needs to be re-triggered here because the gameCount has changed.
-      // But there are no database changes to make it run. So instead, just re-initialise the listener.
-      const unsubscribe = this.listeners.get("cardCount");
-      unsubscribe && unsubscribe();
-      this.listeners.set(
-        "cardCount",
-        this.cardsRef.where("level", "<=", 7).onSnapshot(this.countCards)
-      );
-    };
-
-    this.listeners.set("gameData", this.gameRef.onSnapshot(handleGameData));
+    const { uid, cardsSubscribe, requestGameData } = this.props;
+    cardsSubscribe(uid);
+    requestGameData(uid);
   }
-
-  countCards = snapshot => {
-    let cardsRemaining = 0;
-
-    snapshot.forEach(card => {
-      const data = card.data();
-      if (this.nextLevels.indexOf(data.level) > -1 && !data.deleted)
-        cardsRemaining++;
-    });
-    this.setState({ cardsRemaining });
-
-    // If we're still loading game, it's now ready for the start screen.
-    if (this.state.gameState === GAME_STATES.LOADING_GAME) {
-      this.setState({
-        gameState: GAME_STATES.START_SCREEN
-      });
-    }
-  };
 
   componentWillUnmount() {
-    this.listeners.forEach(unsubscribe => unsubscribe());
+    this.props.cardsUnsubscribe();
   }
 
   render() {
     const {
-      cardData,
-      cardRef,
-      gameState,
-      cardsDue,
-      cardsRemaining,
-      isGameEnd,
-      playedToday
-    } = this.state;
+      isLoaded,
+      currentCardCount,
+      nextCard,
+      isPlaying,
+      startGame,
+      lastPlayed,
+      recordCardAttempt
+    } = this.props;
 
-    const { superUser } = this.props;
+    if (!isLoaded) return <CircularProgress />;
 
-    log.debug("superUser", superUser);
+    if (isPlaying && nextCard)
+      return <FlashCard data={nextCard} handleResult={recordCardAttempt} />;
 
-    const getStartButton = () => {
-      return (!playedToday || superUser) && cardsRemaining ? (
-        <Button
-          size="large"
-          variant="contained"
-          disabled={playedToday && !superUser}
-          onClick={this.startGame}
-        >
-          Start reviewing {cardsRemaining} card
-          {cardsRemaining > 1 ? "s" : ""}
-        </Button>
-      ) : null;
-    };
-
-    const getAddCardsPrompt = () => {
-      return cardsRemaining ? null : (
-        <p>
-          There are no cards scheduled for the next review. Do you want to add
-          some?
-        </p>
-      );
-    };
-
-    const getEndGameMessage = () => {
-      return isGameEnd ? "Done!" : null;
-    };
-
-    const getWaitMessage = () => {
-      return playedToday && cardsRemaining ? (
-        <p>
-          You've already played today. Wait until tomorrow to run through the
-          next set of {cardsRemaining} cards.
-        </p>
-      ) : null;
-    };
-
-    switch (gameState) {
-      case GAME_STATES.LOADING_GAME:
-        return <CircularProgress />;
-      case GAME_STATES.START_SCREEN:
-        return (
-          <div>
-            {getEndGameMessage()}
-            {getWaitMessage()}
-            {getStartButton()}
-            {getAddCardsPrompt()}
-          </div>
-        );
-      case GAME_STATES.LOADING_CARDS:
-        return <CircularProgress />;
-      case GAME_STATES.PLAYING:
-        return (
-          <FlashCard
-            data={cardData}
-            cardRef={cardRef}
-            handleResult={this.handleResult}
-          />
-        );
-    }
+    return (
+      <GameStartButton
+        cardsRemaining={currentCardCount}
+        onClick={startGame}
+        playedToday={isSameDay(new Date(), lastPlayed)}
+      />
+    );
   }
 }
+
+Game.propTypes = {
+  uid: PropTypes.string.isRequired,
+  cardsSubscribe: PropTypes.func.isRequired,
+  cardsUnsubscribe: PropTypes.func.isRequired,
+  requestGameData: PropTypes.func.isRequired,
+  startGame: PropTypes.func.isRequired,
+  recordCardAttempt: PropTypes.func.isRequired,
+  nextCard: PropTypes.object,
+  currentCardCount: PropTypes.number,
+  isLoaded: PropTypes.bool.isRequired,
+  isPlaying: PropTypes.bool.isRequired,
+  lastPlayed: PropTypes.object,
+  gameCount: PropTypes.number
+};
+
+function mapStateToProps(state) {
+  const {
+    game: { gameCount, lastPlayed, isPlaying },
+    user: { uid }
+  } = state;
+  return {
+    uid,
+    gameCount,
+    lastPlayed,
+    isPlaying,
+    isLoaded: gameIsLoaded(state),
+    currentCardCount: getCurrentCardCount(state),
+    nextCard: getNextCard(state)
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    cardsSubscribe: uid => dispatch(cardsSubscribe(uid)),
+    cardsUnsubscribe: () => dispatch(cardsUnsubscribe()),
+    requestGameData: uid => dispatch(requestGameData(uid)),
+    startGame: () => dispatch(startGame()),
+    recordCardAttempt: (cardId, success) =>
+      dispatch(recordCardAttempt(cardId, success))
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Game);

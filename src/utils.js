@@ -37,7 +37,11 @@ function createSubscriptionManager() {
       case "USER_SUBSCRIBE":
         subscriptions.set("USER_UNSUBSCRIBE", action.unsubscribe);
         break;
+      case "CARDS_SUBSCRIBE":
+        subscriptions.set("CARDS_UNSUBSCRIBE", action.unsubscribe);
+        break;
       case "USER_UNSUBSCRIBE":
+      case "CARDS_UNSUBSCRIBE":
         const unsubscribe = subscriptions.get(action.type);
         subscriptions.delete(action.type);
         unsubscribe();

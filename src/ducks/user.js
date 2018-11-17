@@ -2,10 +2,6 @@ import { firebase, auth } from "../firebase";
 import { removeQueryStringFromUrl } from "../utils";
 
 // Action creators
-
-const LOG_IN = "LOG_IN";
-export const logIn = () => ({ type: LOG_IN });
-
 const USER_SUBSCRIBE = "USER_SUBSCRIBE";
 export const userSubscribe = () => dispatch => {
   const handleAuthStateChange = user => {
@@ -81,7 +77,6 @@ export default function reducer(state = {}, action) {
     case USER_UNSUBSCRIBE:
       return {};
     case USER_SUBSCRIBE:
-      return state;
     default:
       return state;
   }

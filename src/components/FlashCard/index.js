@@ -33,11 +33,11 @@ export default class FlashCard extends React.Component {
   };
 
   handleSuccess = () => {
-    this.props.handleResult(true);
+    this.props.handleResult(this.props.data.id, true);
   };
 
   handleFailure = () => {
-    this.props.handleResult(false);
+    this.props.handleResult(this.props.data.id, false);
   };
 
   componentDidUpdate(prevProps) {
