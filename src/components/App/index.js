@@ -33,7 +33,9 @@ export class App extends React.Component {
           <div className={styles.gamePanel}>
             <Game />
           </div>
-          <div className={styles.actionsPanel} />
+          <div className={styles.actionsPanel}>
+            <UserProfile />
+          </div>
           <CardEditDialog />
         </div>
       );

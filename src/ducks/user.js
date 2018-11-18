@@ -1,5 +1,7 @@
 import { firebase, auth } from "../firebase";
 import { removeQueryStringFromUrl } from "../utils";
+import { showNotification } from "./notifications";
+import * as log from "loglevel";
 
 // Action creators
 const USER_SUBSCRIBE = "USER_SUBSCRIBE";
@@ -58,6 +60,42 @@ export const receiveUser = user => ({
   type: RECEIVE_USER,
   user
 });
+
+const REQUEST_LOGIN_EMAIL = "REQUEST_LOGIN_EMAIL";
+const LOGIN_EMAIL_SENT = "LOGIN_EMAIL_SENT";
+export const requestLoginEmail = email => dispatch => {
+  dispatch({ type: REQUEST_LOGIN_EMAIL, email });
+  dispatch(showNotification("Sending login email"));
+  auth
+    .sendSignInLinkToEmail(email, {
+      url: window.location.href,
+      handleCodeInApp: true
+    })
+    .then(() => {
+      window.localStorage.setItem("emailForSignIn", email);
+      dispatch({ type: LOGIN_EMAIL_SENT, email });
+      dispatch(showNotification("Please check your email for a sign-in link"));
+    })
+    .catch(log.error);
+};
+
+const REQUEST_LOGIN_ANON = "REQUEST_LOGIN_ANON";
+const ANONYMOUS_USER_CREATED = "ANONYMOUS_USER_CREATED";
+export const requestLoginAnon = () => dispatch => {
+  dispatch({ type: REQUEST_LOGIN_ANON });
+  dispatch(showNotification("Hold tight, creating your anonymous account"));
+  auth
+    .signInAnonymously()
+    .then(() => {
+      dispatch({ type: ANONYMOUS_USER_CREATED });
+      dispatch(
+        showNotification(
+          "Anonymous account created. Sign up to make it permanent."
+        )
+      );
+    })
+    .catch(log.error);
+};
 
 const USER_UNSUBSCRIBE = "USER_UNSUBSCRIBE";
 export const userUnsubscribe = () => ({ type: USER_UNSUBSCRIBE });

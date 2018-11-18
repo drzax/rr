@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import styles from "./styles.scss";
 import Avatar from "@material-ui/core/Avatar";
 import Face from "@material-ui/icons/Face";
@@ -11,10 +13,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import LogoutButton from "../LogoutButton";
 import LoginButtonEmail from "../LoginButtonEmail";
-import { NotificationsConsumer } from "../Notifications/context";
 import * as log from "loglevel";
 
-export default class UserProfile extends React.Component {
+export class UserProfile extends React.Component {
   state = {
     formData: {},
     open: false
@@ -41,7 +42,6 @@ export default class UserProfile extends React.Component {
   };
 
   render() {
-    log.debug("user", this.props.user);
     const { user } = this.props;
     const { formData, open } = this.state;
     return (
@@ -88,20 +88,14 @@ export default class UserProfile extends React.Component {
             </DialogContent>
           ) : null}
           <DialogActions>
-            <NotificationsConsumer>
-              {({ open }) => <LogoutButton notify={open} />}
-            </NotificationsConsumer>
+            <LogoutButton />
 
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
 
             {user.isAnonymous ? (
-              <NotificationsConsumer>
-                {({ open }) => (
-                  <LoginButtonEmail notify={open} email={formData.email} />
-                )}
-              </NotificationsConsumer>
+              <LoginButtonEmail email={formData.email} />
             ) : null}
           </DialogActions>
         </Dialog>
@@ -109,3 +103,15 @@ export default class UserProfile extends React.Component {
     );
   }
 }
+
+UserProfile.propTypes = {};
+
+const mapStateToProps = state => ({
+  user: state.user
+});
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserProfile);
