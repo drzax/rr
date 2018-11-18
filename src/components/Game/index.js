@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 import {
   cardsSubscribe,
   cardsUnsubscribe,
-  recordCardAttempt
+  recordCardAttempt,
+  createCard
 } from "../../ducks/cards";
 import { requestGameData, startGame, endGame } from "../../ducks/game";
 import { calendar, GAME_STATES } from "../../constants";
@@ -17,6 +18,7 @@ import {
 
 // Components
 import FlashCard from "../FlashCard";
+import Button from "@material-ui/core/Button";
 import GameStartButton from "../GameStartButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -50,6 +52,7 @@ export class Game extends React.Component {
       isPlaying,
       startGame,
       lastPlayed,
+      createCard,
       recordCardAttempt
     } = this.props;
 
@@ -58,12 +61,38 @@ export class Game extends React.Component {
     if (isPlaying && nextCard)
       return <FlashCard {...nextCard} handleResult={recordCardAttempt} />;
 
+    const playedToday = isSameDay(new Date(), lastPlayed);
     return (
-      <GameStartButton
-        cardsRemaining={currentCardCount}
-        onClick={startGame}
-        playedToday={isSameDay(new Date(), lastPlayed)}
-      />
+      <div>
+        {currentCardCount === 0 ? (
+          <div>
+            <p>There are no cards scheduled for the next review.</p>
+            <Button
+              size="small"
+              variant="contained"
+              color="primary"
+              aria-label="Add"
+              onClick={createCard}
+            >
+              Add one?
+            </Button>
+          </div>
+        ) : (
+          <div>
+            <GameStartButton
+              cardsRemaining={currentCardCount}
+              onClick={startGame}
+              playedToday={playedToday}
+            />
+            {playedToday ? (
+              <p>
+                You've alreayd played today. Have a break until tomorrow — this
+                whole thing works best if you have a break between games.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </div>
     );
   }
 }
@@ -76,6 +105,7 @@ Game.propTypes = {
   startGame: PropTypes.func.isRequired,
   recordCardAttempt: PropTypes.func.isRequired,
   nextCard: PropTypes.object,
+  createCard: PropTypes.func.isRequired,
   currentCardCount: PropTypes.number,
   isLoaded: PropTypes.bool.isRequired,
   isPlaying: PropTypes.bool.isRequired,
@@ -106,6 +136,7 @@ function mapDispatchToProps(dispatch) {
     requestGameData: uid => dispatch(requestGameData(uid)),
     startGame: () => dispatch(startGame()),
     endGame: () => dispatch(endGame()),
+    createCard: () => dispatch(createCard()),
     recordCardAttempt: (cardId, success) =>
       dispatch(recordCardAttempt(cardId, success))
   };
