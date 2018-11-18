@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styles from "./styles.scss";
-import { editCard, deleteCard } from "../../ducks/cards";
+import { editCard, deleteCard, recordCardAttempt } from "../../ducks/cards";
 
 // components
 import Button from "@material-ui/core/Button";
@@ -14,8 +14,6 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
-
-import DeleteCardButton from "../DeleteCardButton";
 
 export class FlashCard extends React.Component {
   state = { flipped: false };
@@ -29,11 +27,20 @@ export class FlashCard extends React.Component {
   };
 
   handleSuccess = () => {
-    this.props.handleResult(this.props.data.id, true);
+    const {
+      id,
+      data: { level }
+    } = this.props;
+    console.log("id, level", id, level);
+    this.props.handleResult(id, level, true);
   };
 
   handleFailure = () => {
-    this.props.handleResult(this.props.data.id, false);
+    const {
+      id,
+      data: { level }
+    } = this.props;
+    this.props.handleResult(id, level, false);
   };
 
   componentDidUpdate(prevProps) {
@@ -109,14 +116,17 @@ export class FlashCard extends React.Component {
 
 FlashCard.propTypes = {
   id: PropTypes.string.isRequired,
-  data: PropTypes.object.isRequired
+  data: PropTypes.object.isRequired,
+  handleResult: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch => ({
   editCard: (id, data) => dispatch(editCard(id, data)),
-  deleteCard: id => dispatch(deleteCard(id))
+  deleteCard: id => dispatch(deleteCard(id)),
+  handleResult: (id, level, success) =>
+    dispatch(recordCardAttempt(id, level, success))
 });
 
 export default connect(

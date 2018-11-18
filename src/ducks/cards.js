@@ -37,11 +37,18 @@ const CARDS_UNSUBSCRIBE = "CARDS_UNSUBSCRIBE";
 export const cardsUnsubscribe = () => ({ type: CARDS_UNSUBSCRIBE });
 
 const RECORD_CARD_ATTEMPT = "RECORD_CARD_ATTEMPT";
-export const recordCardAttempt = (cardId, success) => ({
-  type: RECORD_CARD_ATTEMPT,
-  cardId,
-  success
-});
+export const recordCardAttempt = (id, level, success) => dispatch => {
+  console.log("id,level,success", id, level, success);
+  const data = { level: success ? level + 1 : 1, lastAttempt: new Date() };
+  dispatch({ type: RECORD_CARD_ATTEMPT, id, data });
+  firestore
+    .collection("cards")
+    .doc(id)
+    .update(data)
+    .then(() => {
+      dispatch({ type: SAVE_CARD_SUCCESS });
+    });
+};
 
 const EDIT_CARD = "EDIT_CARD";
 export const editCard = (id, data) => ({
@@ -102,13 +109,12 @@ const list = (state = [], action) => {
       return [];
     case RECORD_CARD_ATTEMPT:
       return state.map(card => {
-        if (card.id === action.cardId) {
+        if (card.id === action.id) {
           return {
             ...card,
             data: {
               ...card.data,
-              lastAttempt: new Date(),
-              level: action.success ? card.level + 1 : 0
+              ...action.data
             }
           };
         }
