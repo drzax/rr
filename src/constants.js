@@ -1,10 +1,3 @@
-export const GAME_STATES = {
-  LOADING_GAME: 1,
-  START_SCREEN: 2,
-  LOADING_CARDS: 3,
-  PLAYING: 4
-};
-
 export const calendar = [
   [2, 1],
   [3, 1],

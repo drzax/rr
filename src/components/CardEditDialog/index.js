@@ -1,6 +1,12 @@
 import React from "react";
-import styles from "./styles.scss";
-
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import {
+  editCard,
+  editCardUpdate,
+  saveCard,
+  editCardDone
+} from "../../ducks/cards";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -10,49 +16,30 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import CardSaveButton from "../CardSaveButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { NotificationsConsumer } from "../Notifications/context";
 import * as log from "loglevel";
 
-export default class CardEditDialog extends React.Component {
-  state = { loading: false };
-
+export class CardEditDialog extends React.Component {
   handleInputChange = ({ target }) => {
     const { name, type, checked, value } = target;
     const val = type === "checkbox" ? checked : value;
-    this.setState({
+    this.props.editCardUpdate({
       [name]: val
     });
   };
 
-  handleSave = docRef => {
-    this.props.onClose();
-  };
-
-  fetchCardData() {
-    this.setState({
-      loading: true
-    });
-    this.props.cardRef.get().then(card => {
-      this.setState({
-        loading: false,
-        ...card.data()
-      });
-    });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.cardRef !== this.props.cardRef) {
-      this.fetchCardData();
-    }
-  }
-
-  componentWillMount() {
-    if (this.props.cardRef) this.fetchCardData();
-  }
-
   render() {
-    const { onClose, open, cardRef, uid } = this.props;
-    const { prompt, answer, loading } = this.state;
+    if (this.props.card === false) return null;
+
+    const {
+      editCardDone,
+      saveCard,
+      card,
+      card: {
+        id,
+        saving,
+        data: { prompt, answer }
+      }
+    } = this.props;
 
     const dialogContent = (
       <DialogContent>
@@ -102,32 +89,48 @@ export default class CardEditDialog extends React.Component {
 
     const dialogActions = (
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-
-        <NotificationsConsumer>
-          {({ open }) => (
-            <CardSaveButton
-              notify={open}
-              uid={uid}
-              data={{ ...this.state }}
-              cardRef={cardRef}
-              onSave={this.handleSave}
-              disabled={!prompt || !answer}
-              text={cardRef ? "Update" : "Add"}
-            />
-          )}
-        </NotificationsConsumer>
+        {saving ? <CircularProgress size={10} /> : null}
+        <Button onClick={editCardDone}>Cancel</Button>
+        <Button
+          onClick={() => saveCard(card.id, card.data)}
+          disabled={!(prompt && answer) | saving}
+        >
+          Save
+        </Button>
       </DialogActions>
     );
 
     return (
-      <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">
-          {cardRef ? "Edit" : "Add"} Card
-        </DialogTitle>
-        {loading ? <CircularProgress /> : dialogContent}
-        {!loading ? dialogActions : null}
+      <Dialog open={true} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Edit Card</DialogTitle>
+        {dialogContent}
+        {dialogActions}
       </Dialog>
     );
   }
 }
+
+CardEditDialog.propTypes = {
+  card: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      data: PropTypes.object.isRequired
+    })
+  ])
+};
+
+const mapStateToProps = state => ({
+  card: state.cards.editing
+});
+
+const mapDispatchToProps = dispatch => ({
+  saveCard: (id, data) => dispatch(saveCard(id, data)),
+  editCardUpdate: data => dispatch(editCardUpdate(data)),
+  editCardDone: data => dispatch(editCardDone())
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CardEditDialog);

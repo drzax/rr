@@ -49,7 +49,7 @@ export class Game extends React.Component {
     if (!isLoaded) return <CircularProgress />;
 
     if (isPlaying && nextCard)
-      return <FlashCard data={nextCard} handleResult={recordCardAttempt} />;
+      return <FlashCard {...nextCard} handleResult={recordCardAttempt} />;
 
     return (
       <GameStartButton

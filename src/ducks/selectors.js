@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { levelsFromGameCount } from "../utils";
+import { gameCountCardsFilter } from "../utils";
 
 const getCards = state => state.cards;
 const getGame = state => state.game;
@@ -8,10 +8,12 @@ export const getNextCard = createSelector(
   [getCards, getGame],
   (cards, game) => {
     if (game.gameCount === undefined) return null;
-    const levels = levelsFromGameCount(game.gameCount);
     return cards.list
-      .filter(c => levels.indexOf(c.level) > -1)
-      .sort((a, b) => a.level - b.level || a.lastAttempt - b.lastAttempt)[0];
+      .filter(gameCountCardsFilter(game.gameCount))
+      .sort(
+        (a, b) =>
+          a.data.level - b.data.level || a.data.lastAttempt - b.data.lastAttempt
+      )[0];
   }
 );
 
@@ -19,8 +21,7 @@ export const getCurrentCardCount = createSelector(
   [getCards, getGame],
   (cards, game) => {
     if (game.gameCount === undefined) return null;
-    const levels = levelsFromGameCount(game.gameCount);
-    return cards.list.filter(c => levels.indexOf(c.level) > -1).length;
+    return cards.list.filter(gameCountCardsFilter(game.gameCount)).length;
   }
 );
 

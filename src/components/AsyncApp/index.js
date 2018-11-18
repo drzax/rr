@@ -1,19 +1,17 @@
 import React from "react";
 import * as log from "loglevel";
+import styles from "./styles.scss";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { userSubscribe, userUnsubscribe } from "../../ducks/user";
+
+// components
 import Game from "../Game";
 import AddCard from "../AddCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { auth, firebase } from "../../firebase";
-import {
-  NotificationsProvider,
-  NotificationsConsumer
-} from "../Notifications/context";
 import UserProfile from "../UserProfile";
 import LoginScreen from "../LoginScreen";
-import styles from "./styles.scss";
+import CardEditDialog from "../CardEditDialog";
 
 export class AsyncApp extends React.Component {
   componentDidMount() {
@@ -29,23 +27,16 @@ export class AsyncApp extends React.Component {
 
     if (subscribed && !uid) return <LoginScreen />;
 
-    if (subscribed && uid) {
-      const superUser = false;
-
+    if (subscribed && uid)
       return (
         <div className={styles.root}>
-          <NotificationsProvider>
-            <div className={styles.gamePanel}>
-              <Game />
-            </div>
-            <div className={styles.actionsPanel}>
-              <UserProfile />
-              <AddCard />
-            </div>
-          </NotificationsProvider>
+          <div className={styles.gamePanel}>
+            <Game />
+          </div>
+          <div className={styles.actionsPanel} />
+          <CardEditDialog />
         </div>
       );
-    }
 
     return (
       <div className={styles.loading}>
@@ -64,7 +55,7 @@ AsyncApp.propTypes = {
 
 function mapStateToProps(state) {
   const { uid, subscribed } = state.user;
-  return { uid, subscribed };
+  return { uid, subscribed, editCard: state.cards.editing };
 }
 
 function mapDispatchToProps(dispatch) {

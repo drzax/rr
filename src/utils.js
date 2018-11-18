@@ -9,6 +9,10 @@ export const levelsFromGameCount = gameCount => {
   return calendar[gameCount % 64].slice();
 };
 
+export const gameCountCardsFilter = gameCount => card =>
+  levelsFromGameCount(gameCount).indexOf(card.data.level) > -1 &&
+  !card.data.deleted;
+
 export const configureStore = preloadedState => {
   return createStore(
     rootReducer,
