@@ -1,11 +1,19 @@
-const React = require('react');
-const renderer = require('react-test-renderer');
+import React from "react";
+import renderer from "react-test-renderer";
 
-const Notification = require('.');
+import { Notifications } from ".";
 
-describe('Notification', () => {
-  test('It renders', () => {
-    const component = renderer.create(<Notification />);
+describe("Notification", () => {
+  test("It renders", () => {
+    const message = "Test notification";
+    const component = renderer.create(
+      <Notifications
+        isOpen={true}
+        onClose={() => {}}
+        autoHideDuration={1000}
+        message={message}
+      />
+    );
 
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();

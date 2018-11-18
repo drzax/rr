@@ -1,25 +1,45 @@
 import React from "react";
-import styles from "./styles.scss";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { showNotification, closeNotification } from "../../ducks/notifications";
 import Snackbar from "@material-ui/core/Snackbar";
-import { NotificationsConsumer } from "./context";
 
-export default class Notifications extends React.Component {
+export class Notifications extends React.Component {
   render() {
+    const { isOpen, onClose, autoHideDuration, message } = this.props;
     return (
-      <NotificationsConsumer>
-        {({ isOpen, message, close }) => (
-          <Snackbar
-            open={isOpen}
-            onClose={close}
-            autoHideDuration={6000}
-            anchorOrigin={{ vertical: "top", horizontal: "left" }}
-            ContentProps={{
-              "aria-describedby": "message-id"
-            }}
-            message={<span id="message-id">{message}</span>}
-          />
-        )}
-      </NotificationsConsumer>
+      <Snackbar
+        open={isOpen}
+        onClose={onClose}
+        autoHideDuration={autoHideDuration}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+        ContentProps={{
+          "aria-describedby": "message-id"
+        }}
+        message={<span id="message-id">{message}</span>}
+      />
     );
   }
 }
+
+Notifications.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  autoHideDuration: PropTypes.number.isRequired,
+  message: PropTypes.string.isRequired
+};
+
+const mapDispatchToProps = dispatch => ({
+  onClose: () => dispatch(closeNotification())
+});
+
+const mapStateToProps = state => ({
+  isOpen: state.notifications.isOpen,
+  autoHideDuration: state.notifications.duration,
+  message: state.notifications.message
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Notifications);
