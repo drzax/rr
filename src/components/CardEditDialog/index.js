@@ -93,7 +93,7 @@ export class CardEditDialog extends React.Component {
         <Button onClick={editCardDone}>Cancel</Button>
         <Button
           onClick={() => saveCard(card.id, card.data)}
-          disabled={!(prompt && answer) | saving}
+          disabled={!(prompt && answer) || saving}
         >
           Save
         </Button>
