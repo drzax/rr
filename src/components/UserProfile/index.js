@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styles from "./styles.scss";
+import { requestLoginEmail } from "../../ducks/user";
+
 import Avatar from "@material-ui/core/Avatar";
 import Face from "@material-ui/icons/Face";
 import TextField from "@material-ui/core/TextField";
@@ -12,7 +14,6 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import LogoutButton from "../LogoutButton";
-import LoginButtonEmail from "../LoginButtonEmail";
 import * as log from "loglevel";
 
 export class UserProfile extends React.Component {
@@ -42,7 +43,7 @@ export class UserProfile extends React.Component {
   };
 
   render() {
-    const { user } = this.props;
+    const { user, handleLogin } = this.props;
     const { formData, open } = this.state;
     return (
       <div className={styles.wrapper}>
@@ -95,7 +96,13 @@ export class UserProfile extends React.Component {
             </Button>
 
             {user.isAnonymous ? (
-              <LoginButtonEmail email={formData.email} />
+              <Button
+                onClick={() => handleLogin(formData.email)}
+                color="primary"
+                disabled={!(formData.email && formData.email.length > 3)}
+              >
+                Make my account permanent
+              </Button>
             ) : null}
           </DialogActions>
         </Dialog>
@@ -109,7 +116,10 @@ UserProfile.propTypes = {};
 const mapStateToProps = state => ({
   user: state.user
 });
-const mapDispatchToProps = dispatch => ({});
+
+const mapDispatchToProps = dispatch => ({
+  handleLogin: email => dispatch(requestLoginEmail(email))
+});
 
 export default connect(
   mapStateToProps,

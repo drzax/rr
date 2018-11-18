@@ -14,7 +14,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
-import LoginButtonAnon from "../LoginButtonAnon";
 
 export class LoginScreen extends React.Component {
   state = { email: "" };
