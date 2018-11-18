@@ -27,11 +27,6 @@ export const receiveGameData = game => ({
   game
 });
 
-const INCREMENT_GAME_COUNT = "INCREMENT_GAME_COUNT";
-export const incrementGameCount = () => dispatch => {
-  dispatch({ type: INCREMENT_GAME_COUNT });
-};
-
 const END_GAME = "END_GAME";
 export const endGame = () => ({ type: END_GAME });
 
@@ -45,16 +40,14 @@ export default function reducer(
   switch (action.type) {
     case START_GAME:
       return { ...state, isPlaying: true };
-    case END_GAME:
-      return { ...state, isPlaying: false };
     case RECEIVE_GAME_DATA:
       return { ...state, ...action.game, isLoaded: true };
     case REQUEST_GAME_DATA:
       return { ...state, isLoaded: false };
-    case INCREMENT_GAME_COUNT:
+    case END_GAME:
       let { gameCount } = state;
       gameCount = gameCount ? gameCount + 1 : 0;
-      return { ...state, gameCount };
+      return { ...state, gameCount, isPlaying: false };
     default:
       return state;
   }

@@ -35,6 +35,13 @@ export class Game extends React.Component {
     this.props.cardsUnsubscribe();
   }
 
+  componentDidUpdate() {
+    const { nextCard, isPlaying, endGame } = this.props;
+    if (!nextCard && isPlaying) {
+      endGame();
+    }
+  }
+
   render() {
     const {
       isLoaded,
@@ -98,6 +105,7 @@ function mapDispatchToProps(dispatch) {
     cardsUnsubscribe: () => dispatch(cardsUnsubscribe()),
     requestGameData: uid => dispatch(requestGameData(uid)),
     startGame: () => dispatch(startGame()),
+    endGame: () => dispatch(endGame()),
     recordCardAttempt: (cardId, success) =>
       dispatch(recordCardAttempt(cardId, success))
   };
