@@ -4,6 +4,7 @@ import styles from "./styles.scss";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { userSubscribe, userUnsubscribe } from "../../ducks/user";
+import { createCard } from "../../ducks/cards";
 
 // components
 import Game from "../Game";
@@ -12,6 +13,8 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import UserProfile from "../UserProfile";
 import LoginScreen from "../LoginScreen";
 import CardEditDialog from "../CardEditDialog";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
 
 export class App extends React.Component {
   componentDidMount() {
@@ -23,7 +26,7 @@ export class App extends React.Component {
   }
 
   render() {
-    const { subscribed, uid } = this.props;
+    const { subscribed, uid, createCard } = this.props;
 
     if (subscribed && !uid) return <LoginScreen />;
 
@@ -35,6 +38,16 @@ export class App extends React.Component {
           </div>
           <div className={styles.actionsPanel}>
             <UserProfile />
+            <div>
+              <Button
+                variant="fab"
+                color="primary"
+                aria-label="Add"
+                onClick={createCard}
+              >
+                <AddIcon />
+              </Button>
+            </div>
           </div>
           <CardEditDialog />
         </div>
@@ -63,7 +76,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     userSubscribe: () => dispatch(userSubscribe()),
-    userUnsubscribe: () => dispatch(userUnsubscribe())
+    userUnsubscribe: () => dispatch(userUnsubscribe()),
+    createCard: () => dispatch(createCard())
   };
 }
 

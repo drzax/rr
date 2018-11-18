@@ -50,6 +50,11 @@ export const recordCardAttempt = (id, level, success) => dispatch => {
     });
 };
 
+const CREATE_CARD = "CREATE_CARD";
+export const createCard = () => ({
+  type: CREATE_CARD
+});
+
 const EDIT_CARD = "EDIT_CARD";
 export const editCard = (id, data) => ({
   type: EDIT_CARD,
@@ -70,18 +75,32 @@ export const editCardDone = () => ({
 
 const SAVE_CARD = "SAVE_CARD";
 const SAVE_CARD_SUCCESS = "SAVE_CARD_SUCCESS";
-export const saveCard = (id, data) => dispatch => {
+export const saveCard = (id, data) => (dispatch, getState) => {
   dispatch({ type: SAVE_CARD });
 
-  firestore
-    .collection("cards")
-    .doc(id)
-    .update(data)
-    .then(() => {
-      dispatch({ type: SAVE_CARD_SUCCESS });
-      dispatch(showNotification("Card saved"));
-      dispatch(editCardDone());
-    });
+  const handleSuccess = () => {
+    dispatch({ type: SAVE_CARD_SUCCESS });
+    dispatch(showNotification("Card saved"));
+    dispatch(editCardDone());
+  };
+
+  if (id) {
+    firestore
+      .collection("cards")
+      .doc(id || undefined)
+      .set(data)
+      .then(handleSuccess);
+  } else {
+    firestore
+      .collection("cards")
+      .add({
+        ...data,
+        lastAttempt: new Date(),
+        level: 1,
+        uid: getState().user.uid
+      })
+      .then(handleSuccess);
+  }
 };
 
 const DELETE_CARD = "DELETE_CARD";
@@ -139,6 +158,8 @@ const isLoaded = (state = false, action) => {
 
 const editing = (state = false, action) => {
   switch (action.type) {
+    case CREATE_CARD:
+      return { id: null, data: {} };
     case EDIT_CARD:
       return { id: action.id, data: { ...action.data } };
     case EDIT_CARD_UPDATE:

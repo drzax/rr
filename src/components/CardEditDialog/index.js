@@ -92,7 +92,7 @@ export class CardEditDialog extends React.Component {
         {saving ? <CircularProgress size={10} /> : null}
         <Button onClick={editCardDone}>Cancel</Button>
         <Button
-          onClick={() => saveCard(card.id, card.data)}
+          onClick={() => saveCard(id, card.data)}
           disabled={!(prompt && answer) || saving}
         >
           Save
@@ -102,7 +102,9 @@ export class CardEditDialog extends React.Component {
 
     return (
       <Dialog open={true} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Edit Card</DialogTitle>
+        <DialogTitle id="form-dialog-title">
+          {id ? "Edit" : "Create"} Card
+        </DialogTitle>
         {dialogContent}
         {dialogActions}
       </Dialog>
@@ -114,7 +116,7 @@ CardEditDialog.propTypes = {
   card: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      id: PropTypes.string,
       data: PropTypes.object.isRequired
     })
   ])

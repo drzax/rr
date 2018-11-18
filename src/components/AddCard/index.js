@@ -39,3 +39,8 @@ export default class AddCard extends React.Component {
     );
   }
 }
+
+AddCard.propTypes = {
+  uid: PropTypes.string.isRequired,
+  saveCard: PropTypes.func.isRequired
+};
