@@ -8,6 +8,7 @@ const PROJECT_NAME = "rr";
 const root = document.querySelector(`[data-${PROJECT_NAME}-root]`);
 
 function init() {
+  window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
   render(<Root projectName={PROJECT_NAME} />, root);
 }
 
