@@ -1,12 +1,10 @@
-const React = require('react');
-const renderer = require('react-test-renderer');
+import React from "react";
+import renderer from "react-test-renderer";
+import { AsyncApp } from ".";
 
-const App = require('.');
-
-describe('App', () => {
-  test('It renders', () => {
-    const component = renderer.create(<App projectName="test-project" />);
-
+describe("AsyncApp", () => {
+  test("It renders", () => {
+    const component = renderer.create(<App userChecked={false} />);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });

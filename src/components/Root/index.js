@@ -1,6 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
-import AsyncApp from "../AsyncApp";
+import App from "../App";
 import Notifications from "../Notifications";
 import { configureStore } from "../../utils";
 
@@ -9,7 +9,7 @@ export default class Root extends React.Component {
     return (
       <Provider store={configureStore()}>
         <div>
-          <AsyncApp />
+          <App />
           <Notifications />
         </div>
       </Provider>
