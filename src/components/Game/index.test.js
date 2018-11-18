@@ -1,10 +1,10 @@
-const React = require('react');
-const renderer = require('react-test-renderer');
+const React = require("react");
+const renderer = require("react-test-renderer");
 
-const Game = require('.');
+const Game = require("./component");
 
-describe('Game', () => {
-  test('It renders', () => {
+describe("Game", () => {
+  test("It renders", () => {
     const component = renderer.create(<Game />);
 
     let tree = component.toJSON();
