@@ -10,8 +10,11 @@ export const levelsFromGameCount = gameCount => {
 };
 
 export const gameCountCardsFilter = gameCount => card =>
-  levelsFromGameCount(gameCount).indexOf(card.data.level) > -1 &&
-  !card.data.deleted;
+  !card.data.deleted &&
+  // Caution: this filter only works for the specific calendar currently in use because consecutive levels above two
+  // are never reviewed in the same game. TODO: A more robust solution would be good
+  !(card.data.lastAttemptGame === gameCount && card.data.level > 1) &&
+  levelsFromGameCount(gameCount).indexOf(card.data.level) > -1;
 
 export const configureStore = preloadedState => {
   return createStore(

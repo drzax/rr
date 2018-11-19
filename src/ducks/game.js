@@ -28,7 +28,27 @@ export const receiveGameData = game => ({
 });
 
 const END_GAME = "END_GAME";
-export const endGame = () => ({ type: END_GAME });
+export const endGame = () => (dispatch, getState) => {
+  let {
+    game: { gameCount },
+    user: { uid }
+  } = getState();
+  gameCount = gameCount ? gameCount + 1 : 1;
+  const lastPlayed = new Date();
+  dispatch({ type: END_GAME, gameCount, lastPlayed });
+
+  // TODO: This is dispatched and never confiremd. Figure out a good way to actually deal with failed FB writes.
+  firestore
+    .collection("games")
+    .doc(uid)
+    .update({
+      gameCount,
+      lastPlayed
+    })
+    .then(() => {
+      dispatch({ type: GAME_DATA_SAVED });
+    });
+};
 
 const START_GAME = "START_GAME";
 export const startGame = () => ({ type: START_GAME });
@@ -45,9 +65,12 @@ export default function reducer(
     case REQUEST_GAME_DATA:
       return { ...state, isLoaded: false };
     case END_GAME:
-      let { gameCount } = state;
-      gameCount = gameCount ? gameCount + 1 : 0;
-      return { ...state, gameCount, isPlaying: false };
+      return {
+        ...state,
+        gameCount: action.gameCount,
+        lastPlayed: action.lastPlayed,
+        isPlaying: false
+      };
     default:
       return state;
   }

@@ -37,9 +37,17 @@ const CARDS_UNSUBSCRIBE = "CARDS_UNSUBSCRIBE";
 export const cardsUnsubscribe = () => ({ type: CARDS_UNSUBSCRIBE });
 
 const RECORD_CARD_ATTEMPT = "RECORD_CARD_ATTEMPT";
-export const recordCardAttempt = (id, level, success) => dispatch => {
+export const recordCardAttempt = (id, level, success) => (
+  dispatch,
+  getState
+) => {
   console.log("id,level,success", id, level, success);
-  const data = { level: success ? level + 1 : 1, lastAttempt: new Date() };
+  const { gameCount } = getState().game;
+  const data = {
+    level: success ? level + 1 : 1,
+    lastAttempt: new Date(),
+    lastAttemptGame: gameCount
+  };
   dispatch({ type: RECORD_CARD_ATTEMPT, id, data });
   firestore
     .collection("cards")
