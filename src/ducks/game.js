@@ -28,6 +28,7 @@ export const receiveGameData = game => ({
 });
 
 const END_GAME = "END_GAME";
+const GAME_DATA_SAVED = "GAME_DATA_SAVED";
 export const endGame = () => (dispatch, getState) => {
   let {
     game: { gameCount },
