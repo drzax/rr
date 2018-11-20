@@ -35,15 +35,12 @@ export class App extends React.Component {
     if (subscribed && uid)
       return (
         <div className={styles.root}>
-          <MainMenu
-            className={styles.menu}
-            username={user.isAnonymous ? "Anonymous" : user.email}
-          />
           <div className={styles.gamePanel}>
             <Game />
           </div>
           <div className={styles.actionsPanel}>
             <div className={styles.globalActions}>
+              <MainMenu />
               <UserProfile />
               <Button
                 variant="fab"
