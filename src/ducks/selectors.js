@@ -54,3 +54,14 @@ export const gameIsLoaded = createLoggingSelector(
   [getCards, getGame],
   (cards, game) => cards.isLoaded && game.isLoaded
 );
+
+export const cardsPerLevel = createLoggingSelector(
+  "cardsPerLevel",
+  [getCards],
+  cards =>
+    Array(8)
+      .fill(0)
+      .map((v, idx) =>
+        cards.list.filter(c => !c.data.deleted && c.data.level === idx + 1)
+      )
+);

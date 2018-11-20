@@ -9,7 +9,8 @@ import { requestGameData, startGame, endGame } from "../../ducks/game";
 import {
   getCurrentCardCount,
   getNextCard,
-  gameIsLoaded
+  gameIsLoaded,
+  cardsPerLevel
 } from "../../ducks/selectors";
 
 // COMPONENT
@@ -27,7 +28,8 @@ function mapStateToProps(state) {
     isPlaying,
     isLoaded: gameIsLoaded(state),
     currentCardCount: getCurrentCardCount(state),
-    nextCard: getNextCard(state)
+    nextCard: getNextCard(state),
+    cardsPerLevel: cardsPerLevel(state)
   };
 }
 
