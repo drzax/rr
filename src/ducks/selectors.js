@@ -6,7 +6,17 @@ import * as log from "loglevel";
 const getCards = state => state.cards;
 const getGame = state => state.game;
 
-export const getNextCard = createSelector(
+const createLoggingSelector = (name, state, fn) => {
+  const selector = createSelector(state, fn);
+  return (...args) => {
+    const r = selector(...args);
+    log.debug(name, r);
+    return r;
+  };
+};
+
+export const getNextCard = createLoggingSelector(
+  "getNextCard",
   [getCards, getGame],
   (cards, game) => {
     if (game.gameCount === undefined) return null;
@@ -26,7 +36,8 @@ export const getNextCard = createSelector(
   }
 );
 
-export const getCurrentCardCount = createSelector(
+export const getCurrentCardCount = createLoggingSelector(
+  "getCurrentCardCount",
   [getCards, getGame],
   (cards, game) => {
     if (game.gameCount === undefined) return null;
@@ -38,7 +49,8 @@ export const getCurrentCardCount = createSelector(
   }
 );
 
-export const gameIsLoaded = createSelector(
+export const gameIsLoaded = createLoggingSelector(
+  "gameIsLoaded",
   [getCards, getGame],
   (cards, game) => cards.isLoaded && game.isLoaded
 );
