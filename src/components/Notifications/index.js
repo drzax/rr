@@ -11,7 +11,7 @@ export class Notifications extends React.Component {
       <Snackbar
         open={isOpen}
         onClose={onClose}
-        autoHideDuration={autoHideDuration}
+        autoHideDuration={autoHideDuration || 6000}
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
         ContentProps={{
           "aria-describedby": "message-id"
@@ -25,8 +25,8 @@ export class Notifications extends React.Component {
 Notifications.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  autoHideDuration: PropTypes.number.isRequired,
-  message: PropTypes.string.isRequired
+  message: PropTypes.string.isRequired,
+  autoHideDuration: PropTypes.number
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -36,7 +36,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   isOpen: state.notifications.isOpen,
   autoHideDuration: state.notifications.duration,
-  message: state.notifications.message
+  message: state.notifications.message || ""
 });
 
 export default connect(
