@@ -37,14 +37,12 @@ export default class Game extends React.Component {
       isPlaying,
       startGame,
       lastPlayed,
-      createCard,
-      recordCardAttempt
+      createCard
     } = this.props;
 
     if (!isLoaded) return <CircularProgress />;
 
-    if (isPlaying && nextCard)
-      return <FlashCard {...nextCard} handleResult={recordCardAttempt} />;
+    if (isPlaying && nextCard) return <FlashCard {...nextCard} />;
 
     const playedToday = isSameDay(new Date(), lastPlayed);
     return (
@@ -88,7 +86,6 @@ Game.propTypes = {
   cardsUnsubscribe: PropTypes.func.isRequired,
   requestGameData: PropTypes.func.isRequired,
   startGame: PropTypes.func.isRequired,
-  recordCardAttempt: PropTypes.func.isRequired,
   nextCard: PropTypes.object,
   createCard: PropTypes.func.isRequired,
   currentCardCount: PropTypes.number,

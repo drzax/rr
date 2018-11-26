@@ -54,8 +54,18 @@ export const endGame = () => (dispatch, getState) => {
 const START_GAME = "START_GAME";
 export const startGame = () => ({ type: START_GAME });
 
+const SHOW_ANSWER = "SHOW_ANSWER";
+export const showAnswer = () => ({
+  type: SHOW_ANSWER
+});
+
+const HIDE_ANSWER = "HIDE_ANSWER";
+export const hideAnswer = () => ({
+  type: HIDE_ANSWER
+});
+
 export default function reducer(
-  state = { isLoaded: false, isPlaying: false },
+  state = { isLoaded: false, isPlaying: false, answerVisible: false },
   action
 ) {
   switch (action.type) {
@@ -72,6 +82,10 @@ export default function reducer(
         lastPlayed: action.lastPlayed,
         isPlaying: false
       };
+    case SHOW_ANSWER:
+      return { ...state, answerVisible: true };
+    case HIDE_ANSWER:
+      return { ...state, answerVisible: false };
     default:
       return state;
   }

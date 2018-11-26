@@ -2,6 +2,7 @@ import { firestore } from "../firebase";
 import { combineReducers } from "redux";
 import { showNotification } from "./notifications";
 import * as log from "loglevel";
+import { getNextCard } from "./selectors";
 
 const CARDS_SUBSCRIBE = "CARDS_SUBSCRIBE";
 export const cardsSubscribe = uid => dispatch => {
@@ -37,12 +38,13 @@ const CARDS_UNSUBSCRIBE = "CARDS_UNSUBSCRIBE";
 export const cardsUnsubscribe = () => ({ type: CARDS_UNSUBSCRIBE });
 
 const RECORD_CARD_ATTEMPT = "RECORD_CARD_ATTEMPT";
-export const recordCardAttempt = (id, level, success) => (
-  dispatch,
-  getState
-) => {
-  console.log("id,level,success", id, level, success);
-  const { gameCount } = getState().game;
+export const recordCardAttempt = success => (dispatch, getState) => {
+  const state = getState();
+  const { gameCount } = state.game;
+  const {
+    id,
+    data: { level }
+  } = getNextCard(state);
   const data = {
     level: success ? level + 1 : 1,
     lastAttempt: new Date(),

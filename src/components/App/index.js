@@ -12,6 +12,7 @@ import AddCard from "../AddCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import UserProfile from "../UserProfile";
 import LoginScreen from "../LoginScreen";
+import GameActions from "../GameActions";
 import CardEditDialog from "../CardEditDialog";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
@@ -37,8 +38,8 @@ export class App extends React.Component {
             <Game />
           </div>
           <div className={styles.actionsPanel}>
-            <UserProfile />
-            <div>
+            <div className={styles.globalActions}>
+              <UserProfile />
               <Button
                 variant="fab"
                 color="primary"
@@ -48,6 +49,7 @@ export class App extends React.Component {
                 <AddIcon />
               </Button>
             </div>
+            <GameActions />
           </div>
           <CardEditDialog />
         </div>

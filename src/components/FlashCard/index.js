@@ -2,44 +2,36 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styles from "./styles.scss";
-import { editCard, deleteCard, recordCardAttempt } from "../../ducks/cards";
+import { editCard, deleteCard } from "../../ducks/cards";
+import { showAnswer, hideAnswer } from "../../ducks/game";
 
 // components
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
+import LoopIcon from "@material-ui/icons/Loop";
 import Markdown from "react-markdown";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import CheckIcon from "@material-ui/icons/Check";
-import CloseIcon from "@material-ui/icons/Close";
 
 export class FlashCard extends React.Component {
   state = { flipped: false };
 
-  flipClick = () => {
+  flipClick = e => {
+    e.preventDefault();
+    const { hideAnswer, showAnswer } = this.props;
+    if (this.state.flipped) {
+      hideAnswer();
+    } else {
+      showAnswer();
+    }
     this.setState({ flipped: !this.state.flipped });
-  };
-
-  handleSuccess = () => {
-    const {
-      id,
-      data: { level }
-    } = this.props;
-    this.props.handleResult(id, level, true);
-  };
-
-  handleFailure = () => {
-    const {
-      id,
-      data: { level }
-    } = this.props;
-    this.props.handleResult(id, level, false);
   };
 
   componentDidUpdate(prevProps) {
     if (prevProps.id !== this.props.id) {
+      this.props.hideAnswer();
       this.setState({ flipped: false });
     }
   }
@@ -56,7 +48,7 @@ export class FlashCard extends React.Component {
     const { flipped } = this.state;
 
     return (
-      <Card className={styles.wrapper}>
+      <Card className={styles.wrapper} onClick={this.flipClick}>
         <CardContent className={styles.content}>
           <Markdown
             className={styles.answer}
@@ -65,35 +57,29 @@ export class FlashCard extends React.Component {
         </CardContent>
         <CardActions className={styles.cardActions}>
           <div className={styles.edit}>
-            <Button aria-label="Edit" onClick={() => editCard(id, data)}>
-              <EditIcon />
-            </Button>
-            <Button aria-label="Delete" onClick={() => deleteCard(id)}>
-              <DeleteIcon />
-            </Button>
+            <IconButton
+              aria-label="Edit"
+              onClick={e => {
+                e.stopPropagation();
+                editCard(id, data);
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              aria-label="Delete"
+              onClick={e => {
+                e.stopPropagation();
+                deleteCard(id);
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
           </div>
           <div className={styles.play}>
-            {flipped ? (
-              <Button
-                key="correct"
-                onClick={this.handleSuccess}
-                color="primary"
-              >
-                <CheckIcon />
-              </Button>
-            ) : null}
-            {flipped ? (
-              <Button
-                key="incorrect"
-                onClick={this.handleFailure}
-                color="primary"
-              >
-                <CloseIcon />
-              </Button>
-            ) : null}
-            <Button key="flip" onClick={this.flipClick} color="primary">
-              Flip
-            </Button>
+            <IconButton key="flip" onClick={this.flipClick} color="primary">
+              <LoopIcon fontSize="small" />
+            </IconButton>
           </div>
         </CardActions>
       </Card>
@@ -103,8 +89,7 @@ export class FlashCard extends React.Component {
 
 FlashCard.propTypes = {
   id: PropTypes.string.isRequired,
-  data: PropTypes.object.isRequired,
-  handleResult: PropTypes.func.isRequired
+  data: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({});
@@ -112,8 +97,8 @@ const mapStateToProps = state => ({});
 const mapDispatchToProps = dispatch => ({
   editCard: (id, data) => dispatch(editCard(id, data)),
   deleteCard: id => dispatch(deleteCard(id)),
-  handleResult: (id, level, success) =>
-    dispatch(recordCardAttempt(id, level, success))
+  showAnswer: () => dispatch(showAnswer()),
+  hideAnswer: () => dispatch(hideAnswer())
 });
 
 export default connect(
