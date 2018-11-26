@@ -18,10 +18,6 @@ import CloseIcon from "@material-ui/icons/Close";
 export class FlashCard extends React.Component {
   state = { flipped: false };
 
-  flipKeyboard = e => {
-    if (e.code === "Space") this.setState({ flipped: !this.state.flipped });
-  };
-
   flipClick = () => {
     this.setState({ flipped: !this.state.flipped });
   };
@@ -31,7 +27,6 @@ export class FlashCard extends React.Component {
       id,
       data: { level }
     } = this.props;
-    console.log("id, level", id, level);
     this.props.handleResult(id, level, true);
   };
 
@@ -47,14 +42,6 @@ export class FlashCard extends React.Component {
     if (prevProps.id !== this.props.id) {
       this.setState({ flipped: false });
     }
-  }
-
-  componentDidMount() {
-    // window.addEventListener("keyup", this.flipKeyboard);
-  }
-
-  componentWillUnmount() {
-    // window.removeEventListener("keyup", this.flipKeyboard);
   }
 
   render() {
