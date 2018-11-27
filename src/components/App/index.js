@@ -10,7 +10,6 @@ import { createCard } from "../../ducks/cards";
 import Game from "../Game";
 import AddCard from "../AddCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import UserProfile from "../UserProfile";
 import LoginScreen from "../LoginScreen";
 import GameActions from "../GameActions";
 import CardEditDialog from "../CardEditDialog";
