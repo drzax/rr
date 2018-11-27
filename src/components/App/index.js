@@ -40,8 +40,6 @@ export class App extends React.Component {
           </div>
           <div className={styles.actionsPanel}>
             <div className={styles.globalActions}>
-              <MainMenu />
-              <UserProfile />
               <Button
                 variant="fab"
                 color="primary"
@@ -54,6 +52,7 @@ export class App extends React.Component {
             <GameActions />
           </div>
           <CardEditDialog />
+          <MainMenu className={styles.menu} />
         </div>
       );
 
