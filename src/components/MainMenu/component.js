@@ -5,7 +5,7 @@ import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListSubHeader from "@material-ui/core/ListSubHeader";
+import ListSubheader from "@material-ui/core/ListSubheader";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
@@ -54,7 +54,7 @@ export default class MainMenu extends React.Component {
         >
           <List
             subheader={
-              <ListSubHeader>Hello {isAnonymous ? "" : username}</ListSubHeader>
+              <ListSubheader>Hello {isAnonymous ? "" : username}</ListSubheader>
             }
           >
             {isAnonymous ? (
