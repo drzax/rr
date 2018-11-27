@@ -1,16 +1,16 @@
 .correct {
-  background-color: green;
+  background-color: #00a152 !important;
 }
 
 .incorrect {
-  background-color: red;
+  background-color: #b22a00 !important;
 }
 
 .gameActions > * {
-  margin-top: 10px;
-  margin-left: 0;
+  margin-top: 10px !important;
+  margin-left: 0 !important;
   @media (orientation: portrait) {
-    margin-left: 10px;
-    margin-top: 0;
+    margin-left: 10px !important;
+    margin-top: 0 !important;
   }
 }
