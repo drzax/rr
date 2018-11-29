@@ -11,7 +11,6 @@ import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import MenuIcon from "@material-ui/icons/Menu";
-import Logout from "../Logout";
 
 export default class MainMenu extends React.Component {
   state = { open: false, formData: {} };
@@ -37,7 +36,13 @@ export default class MainMenu extends React.Component {
 
   render() {
     const { open, formData } = this.state;
-    const { username, className, isAnonymous, handleLogin } = this.props;
+    const {
+      username,
+      className,
+      isAnonymous,
+      handleLogin,
+      requestLogout
+    } = this.props;
     return (
       <div className={className}>
         <IconButton
@@ -91,9 +96,9 @@ export default class MainMenu extends React.Component {
           </List>
           <Divider />
           <List>
-            <Logout component={ListItem} componentProps={{ button: true }}>
+            <ListItem button onClick={requestLogout}>
               <ListItemText primary="Logout" />
-            </Logout>
+            </ListItem>
           </List>
         </Drawer>
       </div>
@@ -103,5 +108,6 @@ export default class MainMenu extends React.Component {
 
 MainMenu.propTypes = {
   username: PropTypes.string.isRequired,
-  isAnonymous: PropTypes.bool.isRequired
+  isAnonymous: PropTypes.bool.isRequired,
+  requestLotout: PropTypes.func
 };

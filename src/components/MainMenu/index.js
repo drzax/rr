@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { requestLoginEmail } from "../../ducks/user";
+import { requestLoginEmail, requestLogout } from "../../ducks/user";
 import MainMenu from "./component";
 
 const mapStateToProps = state => {
@@ -13,7 +13,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  handleLogin: email => dispatch(requestLoginEmail(email))
+  handleLogin: email => dispatch(requestLoginEmail(email)),
+  requestLogout: () => dispatch(requestLogout())
 });
 
 export default connect(

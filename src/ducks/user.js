@@ -100,6 +100,19 @@ export const requestLoginAnon = () => dispatch => {
 const USER_UNSUBSCRIBE = "USER_UNSUBSCRIBE";
 export const userUnsubscribe = () => ({ type: USER_UNSUBSCRIBE });
 
+const REQUEST_LOGOUT = "REQUEST_LOGOUT";
+const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const requestLogout = () => dispatch => {
+  dispatch({ type: REQUEST_LOGOUT });
+  auth
+    .signOut()
+    .then(() => {
+      dispatch({ type: LOGOUT_SUCCESS });
+      dispatch(showNotification("You are logged out!"));
+    })
+    .catch(log.error);
+};
+
 // Reducers
 export default function reducer(state = {}, action) {
   switch (action.type) {
